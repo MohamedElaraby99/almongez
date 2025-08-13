@@ -38,7 +38,7 @@ const corsOptions = {
         if (!origin) return callback(null, true);
         
         const allowedOrigins = [
-            'http://localhost:5185',
+            'http://localhost:5187',
             'http://localhost:5173',
             'https://almongz.online',
             'https://www.almongz.online',

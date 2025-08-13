@@ -7,7 +7,7 @@ const getBaseUrl = () => {
     return 'https://api.almongz.online/api/v1';
   }
   // Development fallback
-  return import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:4005/api/v1';
+  return import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:4007/api/v1';
 };
 
 const BASE_URL = getBaseUrl();

@@ -1,7 +1,7 @@
 // Simple server startup script with debugging
 import app from "./app.js";
 
-const PORT = process.env.PORT || 4005;
+const PORT = process.env.PORT || 4007;
 
 console.log('🚀 Starting The Eagle Backend Server...');
 console.log('==========================================');
@@ -33,7 +33,7 @@ async function startServer() {
             console.error(`❌ Port ${PORT} is already in use!`);
             console.log('💡 Try these solutions:');
             console.log('   1. Kill any existing processes on port', PORT);
-            console.log('   2. Use a different port: PORT=4005 npm run dev');
+            console.log('   2. Use a different port: PORT=4007 npm run dev');
             console.log('   3. Check what\'s using the port: netstat -tlnp | grep :', PORT);
             process.exit(1);
         }

@@ -5,7 +5,7 @@ import http from 'http';
 
 const options = {
     hostname: 'localhost',
-    port: 4005,
+    port: 4007,
     path: '/api/test',
     method: 'GET',
     headers: {

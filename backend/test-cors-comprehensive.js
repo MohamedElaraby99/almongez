@@ -3,7 +3,7 @@
 
 import http from 'http';
 
-const BASE_URL = 'http://localhost:4005';
+const BASE_URL = 'http://localhost:4007';
 const TEST_ORIGIN = 'https://www.almongz.online';
 
 const testEndpoints = [
@@ -19,7 +19,7 @@ async function testEndpoint(endpoint) {
     return new Promise((resolve, reject) => {
         const options = {
             hostname: 'localhost',
-            port: 4005,
+            port: 4007,
             path: endpoint,
             method: 'GET',
             headers: {
@@ -91,7 +91,7 @@ async function testOptionsRequest(endpoint) {
     return new Promise((resolve, reject) => {
         const options = {
             hostname: 'localhost',
-            port: 4005,
+            port: 4007,
             path: endpoint,
             method: 'OPTIONS',
             headers: {
