@@ -56,6 +56,7 @@ import {
 } from "react-icons/fa";
 import { axiosInstance } from "../../Helpers/axiosInstance";
 import { egyptianCities } from "../../utils/governorateMapping";
+import CodeSearch from "../../Components/CodeSearch";
 
 export default function AdminUserDashboard() {
     const dispatch = useDispatch();
@@ -86,7 +87,9 @@ export default function AdminUserDashboard() {
     const [userToDeleteInfo, setUserToDeleteInfo] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({});
+    const [editForm, setEditForm] = useState({
+        code: ''
+    });
     const [passwordForm, setPasswordForm] = useState({
         newPassword: '',
         confirmPassword: ''
@@ -163,7 +166,8 @@ export default function AdminUserDashboard() {
                 role: roleFilter,
                 status: filters.status,
                 stage: filters.stage,
-                search: filters.search 
+                search: filters.search,
+                codeSearch: filters.codeSearch
             }));
         } else {
             console.log('User not admin or not logged in');
@@ -212,7 +216,8 @@ export default function AdminUserDashboard() {
             role: roleFilter,
             status: filters.status,
             stage: filters.stage,
-            search: filters.search 
+            search: filters.search,
+            codeSearch: filters.codeSearch
         });
         
         dispatch(getAllUsers({ 
@@ -221,8 +226,21 @@ export default function AdminUserDashboard() {
             role: roleFilter,
             status: filters.status,
             stage: filters.stage,
-            search: filters.search 
+            search: filters.search,
+            codeSearch: filters.codeSearch 
         }));
+    };
+
+    const handleCodeSearchUserSelect = (user) => {
+        // When a user is selected from code search, show their details
+        setSelectedUserId(user.id);
+        setShowUserDetails(true);
+        setIsEditing(false);
+        
+        // Load user details
+        dispatch(getUserDetails(user.id));
+        dispatch(getUserStats(user.id));
+        dispatch(getUserActivities({ userId: user.id, page: 1, limit: 20 }));
     };
 
     const handleViewUser = async (userId) => {
@@ -292,9 +310,13 @@ export default function AdminUserDashboard() {
             };
 
             // Remove empty string values and undefined values that could cause validation issues
+            // But preserve required fields (fullName, username, email)
             Object.keys(userData).forEach(key => {
                 if (userData[key] === '' || userData[key] === undefined) {
-                    delete userData[key];
+                    // Don't delete required fields, just skip them
+                    if (key !== 'fullName' && key !== 'username' && key !== 'email') {
+                        delete userData[key];
+                    }
                 }
             });
 
@@ -310,7 +332,9 @@ export default function AdminUserDashboard() {
             })).unwrap();
             toast.success("تم تحديث معلومات المستخدم بنجاح!");
             setIsEditing(false);
-            setEditForm({});
+            setEditForm({
+                code: ''
+            });
             
             // Refresh user details to show updated information
             await dispatch(getUserDetails(selectedUserId)).unwrap();
@@ -331,6 +355,7 @@ export default function AdminUserDashboard() {
             stage: user.stage?._id || null,
             age: user.age || '',
             role: user.role || 'USER',
+            code: user.code || '',
             isActive: user.isActive
         });
         setIsEditing(true);
@@ -338,7 +363,9 @@ export default function AdminUserDashboard() {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setEditForm({});
+        setEditForm({
+            code: ''
+        });
     };
 
         const handlePasswordChange = async () => {
@@ -613,17 +640,32 @@ export default function AdminUserDashboard() {
                         </button>
                     </div>
 
+                    {/* Quick Code Search */}
+                    <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                        <h3 className="text-base sm:text-lg font-semibold text-indigo-900 dark:text-indigo-100 mb-2 sm:mb-3 flex items-center">
+                            <FaSearch className="mr-2 text-sm sm:text-base" />
+                            البحث السريع بالرمز التعريفي
+                        </h3>
+                        <p className="text-xs sm:text-sm text-indigo-700 dark:text-indigo-300 mb-3 sm:mb-4">
+                            ابحث عن مستخدم بسرعة باستخدام الرمز التعريفي الخاص به
+                        </p>
+                        <CodeSearch 
+                            onUserSelect={handleCodeSearchUserSelect}
+                            className="w-full max-w-md"
+                        />
+                    </div>
+
                     {/* Tab Content */}
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
                         {activeTab === "users" && (
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                            <div className="p-3 sm:p-6">
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
                                     جميع المستخدمين
                                 </h3>
 
                                 {/* Filters */}
-                                <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 البحث
@@ -635,6 +677,15 @@ export default function AdminUserDashboard() {
                                                 onChange={handleFilterChange}
                                                 className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                 placeholder="البحث بالاسم أو البريد الإلكتروني"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                البحث بالرمز
+                                            </label>
+                                            <CodeSearch 
+                                                onUserSelect={handleCodeSearchUserSelect}
+                                                className="w-full"
                                             />
                                         </div>
                                         {activeTab === "all" && (
@@ -830,14 +881,14 @@ export default function AdminUserDashboard() {
                         )}
 
                         {activeTab === "admins" && (
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                            <div className="p-3 sm:p-6">
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
                                     المديرون
                                 </h3>
 
                                 {/* Filters */}
-                                <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 البحث
@@ -849,6 +900,15 @@ export default function AdminUserDashboard() {
                                                 onChange={handleFilterChange}
                                                 className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                 placeholder="البحث بالاسم أو البريد الإلكتروني"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                البحث بالرمز
+                                            </label>
+                                            <CodeSearch 
+                                                onUserSelect={handleCodeSearchUserSelect}
+                                                className="w-full"
                                             />
                                         </div>
                                         <div>
@@ -984,14 +1044,14 @@ export default function AdminUserDashboard() {
                         )}
 
                         {activeTab === "all" && (
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                            <div className="p-3 sm:p-6">
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
                                     جميع المستخدمين
                                 </h3>
 
                                 {/* Filters */}
-                                <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <div className="mb-6 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 البحث
@@ -1003,6 +1063,15 @@ export default function AdminUserDashboard() {
                                                 onChange={handleFilterChange}
                                                 className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                 placeholder="البحث بالاسم أو البريد الإلكتروني"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                البحث بالرمز
+                                            </label>
+                                            <CodeSearch 
+                                                onUserSelect={handleCodeSearchUserSelect}
+                                                className="w-full"
                                             />
                                         </div>
                                         <div>
@@ -1028,7 +1097,7 @@ export default function AdminUserDashboard() {
                                                 name="status"
                                                 value={filters.status}
                                                 onChange={handleFilterChange}
-                                                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                             >
                                                 <option value="">جميع الحالات</option>
                                                 <option value="active">نشط</option>
@@ -1746,6 +1815,22 @@ export default function AdminUserDashboard() {
                                             ) : (
                                                 <p className="text-gray-900 dark:text-white font-medium">
                                                     {selectedUser.age && selectedUser.age > 0 ? `${selectedUser.age} سنة` : 'غير محدد'}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">الرمز التعريفي</label>
+                                            {isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    value={editForm.code || ""}
+                                                    onChange={(e) => setEditForm({...editForm, code: e.target.value})}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="أدخل الرمز التعريفي"
+                                                />
+                                            ) : (
+                                                <p className="text-gray-900 dark:text-white font-medium">
+                                                    {selectedUser.code || 'غير محدد'}
                                                 </p>
                                             )}
                                         </div>

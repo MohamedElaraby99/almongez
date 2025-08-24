@@ -88,6 +88,11 @@ const userSchema = new Schema({
         default: [],
         enum: ['CREATE_ADMIN', 'DELETE_ADMIN', 'MANAGE_USERS', 'MANAGE_COURSES', 'MANAGE_PAYMENTS', 'VIEW_ANALYTICS']
     },
+    code: {
+        type: String,
+        trim: true,
+        default: null
+    },
     isActive: {
         type: Boolean,
         default: true

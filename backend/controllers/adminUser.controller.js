@@ -4,7 +4,7 @@ import AppError from "../utils/error.utils.js";
 // Get all users with pagination and filters
 const getAllUsers = async (req, res, next) => {
     try {
-        const { page = 1, limit = 20, role, status, search, stage } = req.query;
+        const { page = 1, limit = 20, role, status, search, stage, codeSearch } = req.query;
         const skip = (page - 1) * limit;
 
         let query = {};
@@ -30,6 +30,11 @@ const getAllUsers = async (req, res, next) => {
                 { fullName: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } }
             ];
+        }
+
+        // Search by code
+        if (codeSearch) {
+            query.code = { $regex: codeSearch, $options: 'i' };
         }
 
         console.log('Query:', query);
@@ -72,6 +77,7 @@ const getAllUsers = async (req, res, next) => {
                 users: users.map(user => ({
                     id: user._id,
                     fullName: user.fullName,
+                    username: user.username,
                     email: user.email,
                     phoneNumber: user.phoneNumber,
                     role: user.role,
@@ -80,6 +86,7 @@ const getAllUsers = async (req, res, next) => {
                     governorate: user.governorate,
                     stage: user.stage,
                     age: user.age,
+                    code: user.code,
                     walletBalance: user.wallet?.balance || 0,
                     totalTransactions: user.wallet?.transactions?.length || 0,
                     subscriptionStatus: user.subscription?.status || 'inactive',
@@ -255,6 +262,7 @@ const getUserDetails = async (req, res, next) => {
                 user: {
                     id: user._id,
                     fullName: user.fullName,
+                    username: user.username,
                     email: user.email,
                     phoneNumber: user.phoneNumber,
                     fatherPhoneNumber: user.fatherPhoneNumber,
@@ -262,6 +270,7 @@ const getUserDetails = async (req, res, next) => {
                     stage: user.stage,
                     age: user.age,
                     role: user.role,
+                    code: user.code,
                     isActive: user.isActive !== false,
                     avatar: user.avatar,
                     subscription: user.subscription,
@@ -500,6 +509,14 @@ const updateUser = async (req, res, next) => {
             }
         });
 
+        // Ensure required fields are not empty
+        if (!user.fullName || user.fullName.trim() === '') {
+            return next(new AppError("Full name is required", 400));
+        }
+        if (!user.username || user.username.trim() === '') {
+            return next(new AppError("Username is required", 400));
+        }
+
         await user.save();
 
         // Populate stage information before sending response
@@ -521,6 +538,7 @@ const updateUser = async (req, res, next) => {
                     stage: user.stage,
                     age: user.age,
                     role: user.role,
+                    code: user.code,
                     isActive: user.isActive !== false,
                     createdAt: user.createdAt
                 }
