@@ -4,9 +4,192 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateDeviceFingerprint, parseDeviceInfo, generateDeviceName } from "../utils/deviceUtils.js";
+import { getDeviceLimit, updateDeviceLimit as updateConfigLimit } from "../config/device.config.js";
 
-// Constants
-const MAX_DEVICES_PER_USER = 2;
+/**
+ * Update device limit (Admin only)
+ */
+export const updateDeviceLimit = asyncHandler(async (req, res, next) => {
+    const { newLimit } = req.body;
+    
+    if (!newLimit || typeof newLimit !== 'number' || newLimit < 1 || newLimit > 10) {
+        return next(new ApiError(400, "Device limit must be a number between 1 and 10"));
+    }
+
+    try {
+        // Get current limit before updating
+        const currentLimit = getDeviceLimit();
+        
+        // If new limit is less than current limit, reset devices for users who exceed it
+        let resetUsersCount = 0;
+        
+        // Update the device limit in config with reset info
+        const resetInfo = {
+            timestamp: new Date(),
+            resetUsersCount,
+            reason: `Device limit reduced from ${currentLimit} to ${newLimit}`
+        };
+        const success = updateConfigLimit(newLimit, resetInfo);
+        
+        if (!success) {
+            return next(new ApiError(500, "Failed to update device limit"));
+        }
+        if (newLimit < currentLimit) {
+            console.log(`New limit (${newLimit}) is less than current limit (${currentLimit}). Checking for users to reset...`);
+            
+            // Find users who have more active devices than the new limit (exclude SUPER_ADMIN users)
+            const usersToReset = await UserDevice.aggregate([
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'user',
+                        foreignField: '_id',
+                        as: 'userInfo'
+                    }
+                },
+                {
+                    $match: { 
+                        isActive: true,
+                        'userInfo.role': { $ne: 'SUPER_ADMIN' }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$user",
+                        activeDevices: { $sum: 1 }
+                    }
+                },
+                {
+                    $match: {
+                        activeDevices: { $gt: newLimit }
+                    }
+                }
+            ]);
+
+            if (usersToReset.length > 0) {
+                console.log(`Found ${usersToReset.length} users with more than ${newLimit} active devices. Resetting their devices...`);
+                
+                // Reset devices for these users
+                for (const userData of usersToReset) {
+                    const userId = userData._id;
+                    
+                    // Get user info for logging
+                    const user = await userModel.findById(userId).select('email fullName');
+                    const userEmail = user?.email || 'Unknown';
+                    const userName = user?.fullName || 'Unknown';
+                    
+                    // Deactivate all devices for this user
+                    await UserDevice.updateMany(
+                        { user: userId },
+                        { 
+                            $set: { 
+                                isActive: false,
+                                deactivatedAt: new Date(),
+                                deactivationReason: `Device limit reduced to ${newLimit}`
+                            }
+                        }
+                    );
+                    
+                    resetUsersCount++;
+                    console.log(`Reset devices for user ${userName} (${userEmail}) - had ${userData.activeDevices} active devices`);
+                }
+                
+                console.log(`Successfully reset devices for ${resetUsersCount} users`);
+            } else {
+                console.log(`No users found with more than ${newLimit} active devices. No reset needed.`);
+            }
+        } else if (newLimit > currentLimit) {
+            console.log(`New limit (${newLimit}) is greater than current limit (${currentLimit}). No device reset needed.`);
+        } else {
+            console.log(`New limit (${newLimit}) is same as current limit (${currentLimit}). No changes needed.`);
+        }
+        
+        res.status(200).json(
+            new ApiResponse(200, {
+                maxDevicesPerUser: getDeviceLimit(),
+                message: `تم تحديث الحد الأقصى للأجهزة إلى ${newLimit} أجهزة${resetUsersCount > 0 ? ` وتم إعادة تعيين أجهزة ${resetUsersCount} مستخدم` : ''}`,
+                resetUsersCount,
+                previousLimit: currentLimit
+            }, "Device limit updated successfully")
+        );
+    } catch (error) {
+        console.error("Error in updateDeviceLimit:", error);
+        return next(new ApiError(500, "Failed to update device limit"));
+    }
+});
+
+/**
+ * Get current device limit
+ */
+export const getDeviceLimitController = asyncHandler(async (req, res, next) => {
+    try {
+        const { getLimitChangeHistory } = await import("../config/device.config.js");
+        res.status(200).json(
+            new ApiResponse(200, {
+                maxDevicesPerUser: getDeviceLimit(),
+                lastLimitChange: getLimitChangeHistory()
+            }, "Device limit retrieved successfully")
+        );
+    } catch (error) {
+        console.error("Error in getDeviceLimitController:", error);
+        return next(new ApiError(500, "Failed to retrieve device limit"));
+    }
+});
+
+/**
+ * Manually reset devices for a specific user (Admin only)
+ */
+export const resetUserDevicesManually = asyncHandler(async (req, res, next) => {
+    const { userId } = req.params;
+    
+    if (!userId) {
+        return next(new ApiError(400, "User ID is required"));
+    }
+
+    try {
+        // Check if user exists
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return next(new ApiError(404, "User not found"));
+        }
+
+        // Get current active devices count
+        const activeDevicesCount = await UserDevice.countDocuments({ 
+            user: userId, 
+            isActive: true 
+        });
+
+        if (activeDevicesCount === 0) {
+            return next(new ApiError(400, "User has no active devices to reset"));
+        }
+
+        // Reset all devices for this user
+        await UserDevice.updateMany(
+            { user: userId },
+            { 
+                $set: { 
+                    isActive: false,
+                    deactivatedAt: new Date(),
+                    deactivationReason: "Manual reset by administrator"
+                }
+            }
+        );
+
+        console.log(`Manually reset ${activeDevicesCount} devices for user ${user.fullName} (${user.email})`);
+
+        res.status(200).json(
+            new ApiResponse(200, {
+                message: `تم إعادة تعيين ${activeDevicesCount} جهاز للمستخدم ${user.fullName}`,
+                resetDevicesCount: activeDevicesCount,
+                userId: user._id,
+                userName: user.fullName
+            }, "User devices reset successfully")
+        );
+    } catch (error) {
+        console.error("Error in resetUserDevicesManually:", error);
+        return next(new ApiError(500, "Failed to reset user devices"));
+    }
+});
 
 /**
  * Register or update device for user
@@ -73,18 +256,23 @@ export const registerDevice = asyncHandler(async (req, res, next) => {
             );
         }
 
-        // Check current device count for user
-        const deviceCount = await UserDevice.countDocuments({
-            user: userId,
-            isActive: true
-        });
+        // Check current device count for user (skip limit check for SUPER_ADMIN)
+        const user = await userModel.findById(userId).select('role');
+        const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+        
+        if (!isSuperAdmin) {
+            const deviceCount = await UserDevice.countDocuments({
+                user: userId,
+                isActive: true
+            });
 
-        if (deviceCount >= MAX_DEVICES_PER_USER) {
-            return next(new ApiError(
-                403, 
-                `تم الوصول للحد الأقصى من الأجهزة المسموحة (${MAX_DEVICES_PER_USER} أجهزة). يرجى التواصل مع الإدارة لإعادة تعيين الأجهزة.`,
-                "DEVICE_LIMIT_EXCEEDED"
-            ));
+            if (deviceCount >= getDeviceLimit()) {
+                return next(new ApiError(
+                    403, 
+                    `تم الوصول للحد الأقصى من الأجهزة المسموحة (${getDeviceLimit()} أجهزة). يرجى التواصل مع الإدارة لإعادة تعيين الأجهزة.`,
+                    "DEVICE_LIMIT_EXCEEDED"
+                ));
+            }
         }
 
         // Create new device
@@ -100,7 +288,8 @@ export const registerDevice = asyncHandler(async (req, res, next) => {
             new ApiResponse(201, {
                 device: newDevice,
                 isNewDevice: true,
-                remainingSlots: MAX_DEVICES_PER_USER - deviceCount - 1
+                remainingSlots: isSuperAdmin ? 'unlimited' : getDeviceLimit() - deviceCount - 1,
+                isUnlimited: isSuperAdmin
             }, "Device registered successfully")
         );
 
@@ -266,19 +455,37 @@ export const getAllUsersDevices = asyncHandler(async (req, res, next) => {
                     },
                     lastDeviceActivity: {
                         $max: '$devices.lastActivity'
+                    },
+                    isUnlimited: { $eq: ['$role', 'SUPER_ADMIN'] },
+                    deviceLimit: {
+                        $cond: {
+                            if: { $eq: ['$role', 'SUPER_ADMIN'] },
+                            then: 'unlimited',
+                            else: getDeviceLimit()
+                        }
                     }
                 }
             }
         );
 
-        // Filter by device status
+        // Filter by device status (exclude SUPER_ADMIN from overLimit filter)
         if (deviceStatus === 'overLimit') {
             pipeline.push({
-                $match: { activeDevices: { $gt: MAX_DEVICES_PER_USER } }
+                $match: { 
+                    $and: [
+                        { activeDevices: { $gt: getDeviceLimit() } },
+                        { role: { $ne: 'SUPER_ADMIN' } }
+                    ]
+                }
             });
         } else if (deviceStatus === 'underLimit') {
             pipeline.push({
-                $match: { activeDevices: { $lt: MAX_DEVICES_PER_USER } }
+                $match: { 
+                    $or: [
+                        { activeDevices: { $lt: getDeviceLimit() } },
+                        { role: 'SUPER_ADMIN' }
+                    ]
+                }
             });
         }
 
@@ -345,11 +552,21 @@ export const getAllUsersDevices = asyncHandler(async (req, res, next) => {
 
         if (deviceStatus === 'overLimit') {
             countPipeline.push({
-                $match: { activeDevices: { $gt: MAX_DEVICES_PER_USER } }
+                $match: { 
+                    $and: [
+                        { activeDevices: { $gt: getDeviceLimit() } },
+                        { role: { $ne: 'SUPER_ADMIN' } }
+                    ]
+                }
             });
         } else if (deviceStatus === 'underLimit') {
             countPipeline.push({
-                $match: { activeDevices: { $lt: MAX_DEVICES_PER_USER } }
+                $match: { 
+                    $or: [
+                        { activeDevices: { $lt: getDeviceLimit() } },
+                        { role: 'SUPER_ADMIN' }
+                    ]
+                }
             });
         }
 
@@ -367,7 +584,7 @@ export const getAllUsersDevices = asyncHandler(async (req, res, next) => {
                     totalUsers,
                     limit: parseInt(limit)
                 },
-                maxDevicesPerUser: MAX_DEVICES_PER_USER
+                maxDevicesPerUser: getDeviceLimit()
             }, "Users with device information retrieved successfully")
         );
 
@@ -488,16 +705,29 @@ export const getDeviceStats = asyncHandler(async (req, res, next) => {
             { $sort: { count: -1 } }
         ]);
 
-        // Get users over device limit
+        // Get users over device limit (exclude SUPER_ADMIN users)
         const usersOverLimit = await UserDevice.aggregate([
-            { $match: { isActive: true } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'userInfo'
+                }
+            },
+            { 
+                $match: { 
+                    isActive: true,
+                    'userInfo.role': { $ne: 'SUPER_ADMIN' }
+                }
+            },
             {
                 $group: {
                     _id: '$user',
                     deviceCount: { $sum: 1 }
                 }
             },
-            { $match: { deviceCount: { $gt: MAX_DEVICES_PER_USER } } },
+            { $match: { deviceCount: { $gt: getDeviceLimit() } } },
             { $count: "usersOverLimit" }
         ]);
 
@@ -508,7 +738,7 @@ export const getDeviceStats = asyncHandler(async (req, res, next) => {
             platformStats,
             browserStats,
             usersOverLimit: overLimitCount,
-            maxDevicesPerUser: MAX_DEVICES_PER_USER
+            maxDevicesPerUser: getDeviceLimit()
         };
 
         res.status(200).json(

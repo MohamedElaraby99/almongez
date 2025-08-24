@@ -295,7 +295,7 @@ const VideoProgress = ({
   const getProgressColor = (progress) => {
     if (progress >= 90) return 'text-green-500';
     if (progress >= 70) return 'text-yellow-500';
-    if (progress >= 50) return 'text-orange-500';
+    if (progress >= 50) return 'text-blue-500';
     return 'text-red-500';
   };
 

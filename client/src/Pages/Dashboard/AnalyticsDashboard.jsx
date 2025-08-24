@@ -265,8 +265,8 @@ export default function AnalyticsDashboard() {
 
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                   <div className="flex items-center">
-                    <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                      <FaVideo className="text-purple-600 dark:text-purple-300 text-2xl" />
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                      <FaVideo className="text-blue-600 dark:text-blue-300 text-2xl" />
                     </div>
                     <div className="mr-4">
                       <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي المقاطع</p>
@@ -488,7 +488,7 @@ export default function AnalyticsDashboard() {
                               <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                                 result.examType === 'training' 
                                   ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                                  : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                               }`}>
                                 {result.examType === 'training' ? 'تدريب' : 'امتحان '}
                               </span>

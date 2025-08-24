@@ -6,7 +6,10 @@ import {
     getAllUsersDevices,
     resetUserDevices,
     removeDevice,
-    getDeviceStats
+    getDeviceStats,
+    updateDeviceLimit,
+    getDeviceLimitController,
+    resetUserDevicesManually
 } from "../controllers/deviceManagement.controller.js";
 import { isLoggedIn, requireAdmin } from "../middleware/auth.middleware.js";
 
@@ -20,7 +23,10 @@ router.post("/check-authorization", isLoggedIn, checkDeviceAuthorization);
 router.get("/users", isLoggedIn, requireAdmin, getAllUsersDevices);
 router.get("/users/:userId/devices", isLoggedIn, requireAdmin, getUserDevices);
 router.put("/users/:userId/reset", isLoggedIn, requireAdmin, resetUserDevices);
+router.put("/users/:userId/reset-manual", isLoggedIn, requireAdmin, resetUserDevicesManually);
 router.delete("/devices/:deviceId", isLoggedIn, requireAdmin, removeDevice);
 router.get("/stats", isLoggedIn, requireAdmin, getDeviceStats);
+router.get("/limit", isLoggedIn, requireAdmin, getDeviceLimitController);
+router.put("/limit", isLoggedIn, requireAdmin, updateDeviceLimit);
 
 export default router;

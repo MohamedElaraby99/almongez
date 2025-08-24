@@ -43,8 +43,8 @@ export default function BlogDashboard() {
     "تكنولوجيا",
     "تعليم", 
     "برمجة",
-    "تصميم",
-    "أعمال",
+    "التصميم",
+    "الأعمال",
     "أخرى"
   ];
 
@@ -221,10 +221,10 @@ export default function BlogDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي المشاهدات</p>
-                  <p className="text-2xl font-bold text-purple-600">{totalViews}</p>
+                  <p className="text-2xl font-bold text-blue-600">{totalViews}</p>
                 </div>
-                <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-full">
-                  <FaEye className="text-purple-600 dark:text-purple-400" />
+                <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
+                  <FaEye className="text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </div>
@@ -737,7 +737,7 @@ export default function BlogDashboard() {
                     <div className="mt-2">
                       <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">الصورة الحالية:</p>
                       <img 
-                        src={generateImageUrl(selectedBlog.image.secure_url)} 
+                        src={selectedBlog.image.secure_url} 
                         alt="Current" 
                         className="w-32 h-32 object-cover rounded-lg border"
                       />

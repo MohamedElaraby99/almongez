@@ -55,12 +55,10 @@ const takeTrainingExam = asyncHandler(async (req, res) => {
         throw new AppError("Training not found or has no questions", 400);
     }
 
-    // Check if user has already taken this training (for all users including USER1)
-    const existingAttempt = training.userAttempts.find(attempt => 
-        attempt.userId.toString() === userId.toString()
-    );
-    if (existingAttempt) {
-        throw new AppError("You have already taken this training", 400);
+    // Check if training is open based on dates
+    const now = new Date();
+    if (training.openDate && now < new Date(training.openDate)) {
+        throw new AppError("Training is not open yet", 400);
     }
 
     // Calculate results
@@ -122,6 +120,11 @@ const takeTrainingExam = asyncHandler(async (req, res) => {
         success: true,
         message: "Training completed successfully",
         data: {
+            examType: 'training',
+            examId: training._id,
+            courseId,
+            lessonId,
+            unitId: unitId || null,
             score,
             totalQuestions,
             percentage,
@@ -218,6 +221,15 @@ const takeFinalExam = asyncHandler(async (req, res) => {
     }
     console.log('Exam found:', exam.title, 'with', exam.questions.length, 'questions');
 
+    // Check if exam is open based on dates
+    const now = new Date();
+    if (exam.openDate && now < new Date(exam.openDate)) {
+        throw new AppError("Exam is not open yet", 400);
+    }
+    if (exam.closeDate && now > new Date(exam.closeDate)) {
+        throw new AppError("Exam is closed", 400);
+    }
+
     // Check if user has already taken this exam
     const existingAttempt = exam.userAttempts.find(attempt => 
         attempt.userId.toString() === userId.toString()
@@ -285,6 +297,11 @@ const takeFinalExam = asyncHandler(async (req, res) => {
         success: true,
         message: "Exam completed successfully",
         data: {
+            examType: 'final',
+            examId: exam._id,
+            courseId,
+            lessonId,
+            unitId: unitId || null,
             score,
             totalQuestions,
             percentage,
@@ -481,98 +498,69 @@ const getAllExamResults = asyncHandler(async (req, res) => {
     });
 });
 
-// Get exam details with correct answers for review
-const getExamDetails = asyncHandler(async (req, res) => {
-    const { examId } = req.params;
-    
-    if (!examId) {
-        throw new AppError("Exam ID is required", 400);
+// Clear exam attempt for a specific user and exam
+const clearExamAttempt = asyncHandler(async (req, res) => {
+    const { courseId, lessonId, examId } = req.params;
+    const userId = req.user._id || req.user.id;
+
+    if (!userId) {
+        throw new AppError("User ID not found in request", 400);
     }
 
-    // Find the course that contains this exam
-    const course = await Course.findOne({
-        $or: [
-            { "directLessons.exams._id": examId },
-            { "directLessons.trainings._id": examId },
-            { "units.lessons.exams._id": examId },
-            { "units.lessons.trainings._id": examId }
-        ]
-    });
-
+    // Find the course and lesson
+    const course = await Course.findById(courseId);
     if (!course) {
+        throw new AppError("Course not found", 404);
+    }
+
+    let lesson = null;
+    let unit = null;
+
+    // Find lesson in units or direct lessons
+    if (req.query.unitId) {
+        unit = course.units.id(req.query.unitId);
+        if (!unit) {
+            throw new AppError("Unit not found", 404);
+        }
+        lesson = unit.lessons.id(lessonId);
+    } else {
+        lesson = course.directLessons.id(lessonId);
+    }
+
+    if (!lesson) {
+        throw new AppError("Lesson not found", 404);
+    }
+
+    // Find the specific exam by ID
+    const exam = lesson.exams.id(examId);
+    if (!exam) {
         throw new AppError("Exam not found", 404);
     }
 
-    let exam = null;
-    let lessonPath = null;
+    // Remove user attempts for this exam
+    const initialLength = exam.userAttempts.length;
+    exam.userAttempts = exam.userAttempts.filter(attempt => 
+        attempt.userId.toString() !== userId.toString()
+    );
+    
+    const removedCount = initialLength - exam.userAttempts.length;
 
-    // Search in direct lessons
-    for (let i = 0; i < course.directLessons.length; i++) {
-        const lesson = course.directLessons[i];
-        
-        // Check exams
-        const foundExam = lesson.exams.id(examId);
-        if (foundExam) {
-            exam = foundExam;
-            lessonPath = { type: 'direct', lessonIndex: i };
-            break;
-        }
-        
-        // Check trainings
-        const foundTraining = lesson.trainings.id(examId);
-        if (foundTraining) {
-            exam = foundTraining;
-            lessonPath = { type: 'direct', lessonIndex: i };
-            break;
-        }
+    if (removedCount === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No exam attempts found for this user"
+        });
     }
 
-    // Search in units if not found in direct lessons
-    if (!exam) {
-        for (let unitIndex = 0; unitIndex < course.units.length; unitIndex++) {
-            const unit = course.units[unitIndex];
-            for (let lessonIndex = 0; lessonIndex < unit.lessons.length; lessonIndex++) {
-                const lesson = unit.lessons[lessonIndex];
-                
-                // Check exams
-                const foundExam = lesson.exams.id(examId);
-                if (foundExam) {
-                    exam = foundExam;
-                    lessonPath = { type: 'unit', unitIndex, lessonIndex };
-                    break;
-                }
-                
-                // Check trainings
-                const foundTraining = lesson.trainings.id(examId);
-                if (foundTraining) {
-                    exam = foundTraining;
-                    lessonPath = { type: 'unit', unitIndex, lessonIndex };
-                    break;
-                }
-            }
-            if (exam) break;
-        }
-    }
+    // Save the course
+    await course.save();
 
-    if (!exam) {
-        throw new AppError("Exam not found in course", 404);
-    }
-
-    // Return exam details with correct answers
     res.status(200).json({
         success: true,
+        message: `Successfully cleared ${removedCount} exam attempt(s)`,
         data: {
-            _id: exam._id,
-            title: exam.title,
-            description: exam.description,
-            timeLimit: exam.timeLimit,
-            questions: exam.questions.map(q => ({
-                question: q.question,
-                options: q.options,
-                correctAnswer: q.correctAnswer,
-                explanation: q.explanation,
-                image: q.image
-            }))
+            removedAttempts: removedCount,
+            remainingAttempts: exam.userAttempts.length
         }
     });
 });
@@ -584,5 +572,5 @@ export {
     getUserExamHistory,
     getExamStatistics,
     checkExamTaken,
-    getExamDetails
+    clearExamAttempt
 }; 

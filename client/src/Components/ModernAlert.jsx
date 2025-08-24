@@ -94,7 +94,7 @@ const ModernAlert = ({
     },
     warning: {
       icon: <FaExclamationTriangle />,
-      bgColor: 'bg-gradient-to-r from-yellow-500 to-orange-600',
+      bgColor: 'bg-gradient-to-r from-yellow-500 to-blue-600',
       borderColor: 'border-yellow-200 dark:border-yellow-800',
       textColor: 'text-yellow-800 dark:text-yellow-200',
       bgLight: 'bg-yellow-50 dark:bg-yellow-900/20',

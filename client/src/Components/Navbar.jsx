@@ -12,9 +12,12 @@ export default function Navbar() {
     localStorage.getItem("theme") === "light" ? false : true
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, role } = useSelector((state) => state.auth);
+  const { data: user, role } = useSelector((state) => state.auth);
   const location = useLocation();
   const dispatch = useDispatch();
+
+  // Debug: Simple check to see what's happening
+  console.log("🔍 Navbar - User state:", { user, role, hasUser: !!user?.fullName });
 
   // Use scroll to top utility
   useScrollToTop();
@@ -90,7 +93,7 @@ export default function Navbar() {
 
   const menuItems = [
     { name: "الرئيسية", path: "/", icon: FaHome },
-    { name: "الكورسات", path: "/subjects", icon: FaGraduationCap },
+    { name: "الكورسات ", path: "/subjects", icon: FaGraduationCap },
     { name: "الدورات", path: "/courses", icon: FaList },
     
     { name: "المدونة", path: "/blogs", icon: FaBlog },
@@ -110,26 +113,19 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+    <nav className="sticky top-0 z-50 bg-white/15 dark:bg-gray-900/15 backdrop-blur-3xl border-b border-gray-200/20 dark:border-gray-700/20 shadow-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0.5">
+                 <div className="flex justify-between items-center h-20 md:h-24">
           {/* Modern Logo */}
-          <Link to="/" onClick={handleLogoClick} className="flex items-center space-x-4 group logo-hover">
-          
+                     <Link to="/" onClick={handleLogoClick} className="flex items-center space-x-2 md:space-x-4 group logo-hover">
+        
             <div className="relative">
               {/* Logo Image */}
-              <img 
-                src={logo} 
-                alt="منصة" 
-                className="w-14 h-14 object-contain group-hover:scale-110 transition-transform duration-300 dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] dark:group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <span className="oi-regular text-2xl font-bold text-blue-600 group-hover:text-blue-700 transition-colors duration-300 dark:text-blue-400 dark:group-hover:text-blue-300 dark:drop-shadow-[0_0_20px_rgba(217,119,6,0.5)] dark:group-hover:drop-shadow-[0_0_25px_rgba(217,119,6,0.7)]">
-                Almongez
-              </span>
-              
+                             <img 
+                 src={logo} 
+                 alt="منصة  almongezz" 
+                 className="w-16 h-16 md:w-20 md:h-20 object-contain group-hover:scale-110 transition-transform duration-300 dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] dark:group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+               />
             </div>
           
           </Link>
@@ -139,82 +135,58 @@ export default function Navbar() {
             {/* Theme Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="p-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900 dark:hover:to-purple-900 transition-all duration-300 group shadow-lg hover:shadow-xl"
+              className="relative w-16 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-300 dark:border-blue-600 overflow-hidden"
             >
-              {darkMode ? (
-                <FaSun className="w-5 h-5 text-yellow-500 group-hover:scale-110 transition-transform duration-300" />
-              ) : (
-                <FaMoon className="w-5 h-5 text-gray-700 group-hover:scale-110 transition-transform duration-300" />
-              )}
+              {/* Sun Icon (Left side) */}
+              <div className={`absolute left-1 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${darkMode ? 'opacity-40' : 'opacity-100'}`}>
+                <FaSun className="w-4 h-4 text-white" />
+              </div>
+              
+              {/* Moon Icon (Right side) */}
+              <div className={`absolute right-1 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${darkMode ? 'opacity-100' : 'opacity-40'}`}>
+                <FaMoon className="w-4 h-4 text-white" />
+              </div>
+              
+              {/* Toggle Thumb */}
+              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full border-2 border-blue-400 transition-all duration-300 transform ${darkMode ? 'translate-x-8' : 'translate-x-1'}`}>
+                {darkMode ? (
+                  <FaMoon className="w-3 h-3 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                ) : (
+                  <FaSun className="w-3 h-3 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                )}
+              </div>
             </button>
 
-            {/* Desktop User Menu */}
-            {user && user.fullName ? (
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900 dark:hover:to-purple-900 transition-all duration-300 shadow-lg hover:shadow-xl">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300">
-                    <span className="text-white text-sm font-bold">
-                      {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {user.fullName}
-                  </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                      {user.role}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Desktop Dropdown Menu */}
-                <div className="relative group">
-                  <button className="p-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900 dark:hover:to-purple-900 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <FaUser className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                  </button>
-                  
-                  {/* Dropdown Content */}
-                  <div className="absolute right-0 mt-3 w-56 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                    <div className="py-3">
-                      <Link
-                        to="/profile"
-                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 rounded-xl mx-2"
-                      >
-                        <FaUser className="w-4 h-4" />
-                        <span className="font-medium">الملف الشخصي</span>
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center space-x-3 px-4 py-3 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-900/20 dark:hover:to-pink-900/20 transition-all duration-300 w-full text-left rounded-xl mx-2"
-                      >
-                        <FaSignOutAlt className="w-4 h-4" />
-                        <span className="font-medium">تسجيل الخروج</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+            {/* Sign Up Button - ONLY show when NO user is logged in */}
+            {!user?.fullName && (
+              <Link
+                to="/signup"
+                className="px-3 py-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-blue-300/30"
+              >
+                سجل الآن
+              </Link>
+            )}
+
+{!user?.fullName && (
+              <Link
+                to="/login"
+                className="px-3 py-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-blue-300/30"
+              >
+                تسجيل الدخول
+              </Link>
+            )}
 
             {/* Menu Button - Visible on all devices */}
-            <div className="flex items-center space-x-3">
-              {user && (
-                <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <span className="text-white text-sm font-bold">
-                      {user.fullName?.charAt(0)?.toUpperCase() || "U"}
-                    </span>
-                  </div>
-                </div>
+            <div className="flex items-center space-x-3">  
+              {/* Burger Menu Button - ONLY show when user is logged in */}
+              {user?.fullName && (
+                <button
+                  onClick={toggleMenu}
+                  className="p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-700 hover:from-blue-200 hover:to-blue-300 dark:hover:from-blue-700 dark:hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-200 dark:border-blue-600"
+                >
+                  <FaBars className="w-4 h-4 md:w-5 md:h-5 text-blue-700 dark:text-blue-300" />
+                </button>
               )}
-              
-              {/* Burger Menu Button */}
-              <button
-                onClick={toggleMenu}
-                className="p-3 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900 dark:hover:to-purple-900 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                <FaBars className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-              </button>
             </div>
           </div>
         </div>
@@ -241,13 +213,13 @@ export default function Navbar() {
                   to={item.path}
                   className={`flex items-center space-x-4 px-6 py-4 mx-4 rounded-2xl font-medium transition-all duration-300 mobile-menu-item ${
                     location.pathname === item.path
-                      ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-lg"
+                      ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 shadow-lg"
                       : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 dark:hover:from-gray-800 dark:hover:to-blue-900/20"
                   }`}
                 >
                   <div className={`p-3 rounded-xl shadow-lg ${
                     location.pathname === item.path
-                      ? "bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30"
+                      ? "bg-gradient-to-r from-blue-100 to-yellow-100 dark:from-blue-900/30 dark:to-yellow-900/30"
                       : "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
                   }`}>
                     <item.icon className="w-5 h-5" />
@@ -261,9 +233,9 @@ export default function Navbar() {
             {user && (
               <>
                 <div className="border-t border-gray-200/50 dark:border-gray-700/50 pt-6">
-                  <div className="px-6 py-4 mx-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl shadow-lg">
+                  <div className="px-6 py-4 mx-4 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 rounded-2xl shadow-lg">
                     <div className="flex items-center space-x-4">
-                      <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+                      <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-yellow-600 rounded-2xl flex items-center justify-center shadow-xl">
                         <span className="text-white font-bold text-lg">
                           {user.fullName?.charAt(0)?.toUpperCase() || "U"}
                         </span>
@@ -287,7 +259,7 @@ export default function Navbar() {
                 {user.role === "ADMIN" && (
                   <div className="space-y-3">
                     <div className="px-6 py-3">
-                      <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                      <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                         لوحة الإدارة
                       </p>
                     </div>
@@ -297,13 +269,13 @@ export default function Navbar() {
                         to={item.path}
                         className={`flex items-center space-x-4 px-6 py-4 mx-4 rounded-2xl font-medium transition-all duration-300 mobile-menu-item ${
                           location.pathname === item.path
-                            ? "text-purple-600 dark:text-purple-400 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 shadow-lg"
-                            : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50 dark:hover:from-gray-800 dark:hover:to-purple-900/20"
+                            ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 shadow-lg"
+                            : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 dark:hover:from-gray-800 dark:hover:to-blue-900/20"
                         }`}
                       >
                         <div className={`p-3 rounded-xl shadow-lg ${
                           location.pathname === item.path
-                            ? "bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30"
+                            ? "bg-gradient-to-r from-blue-100 to-yellow-100 dark:from-blue-900/30 dark:to-yellow-900/30"
                             : "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
                         }`}>
                           <item.icon className="w-5 h-5" />
@@ -346,17 +318,28 @@ export default function Navbar() {
             {/* Guest Actions */}
             {!user && (
               <div className="space-y-4 px-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    انضم إلينا الآن
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    ابدأ رحلة التعلم مع منصة  almongezz
+                  </p>
+                </div>
+                
                 <Link
                   to="/login"
-                  className="block w-full px-8 py-4 text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 mobile-menu-item shadow-lg hover:shadow-xl"
+                  className="flex items-center justify-center gap-3 w-full px-8 py-4 text-center bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 mobile-menu-item shadow-lg hover:shadow-xl border-2 border-blue-400/50"
                 >
+                  <FaUser className="w-5 h-5" />
                   تسجيل الدخول
                 </Link>
                 <Link
                   to="/signup"
-                  className="block w-full px-8 py-4 text-center border-2 border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white rounded-2xl font-bold transition-all duration-300 mobile-menu-item shadow-lg hover:shadow-xl"
+                  className="flex items-center justify-center gap-3 w-full px-8 py-4 text-center border-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-500 hover:via-blue-600 hover:to-yellow-500 hover:text-white rounded-2xl font-bold transition-all duration-300 mobile-menu-item shadow-lg hover:shadow-xl"
                 >
-                  إنشاء حساب
+                  <FaPlus className="w-5 h-5" />
+                  إنشاء حساب جديد
                 </Link>
               </div>
             )}

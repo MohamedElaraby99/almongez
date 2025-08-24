@@ -40,9 +40,6 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
   const [timeTaken, setTimeTaken] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
-  const [showDetailedReview, setShowDetailedReview] = useState(false);
-  const [examWithAnswers, setExamWithAnswers] = useState(null);
-  const [loadingAnswers, setLoadingAnswers] = useState(false);
   
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
@@ -86,14 +83,26 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
     }
   }, [exam]);
 
-  // Handle exam result
+  // Reset stale results when opening a different exam
   useEffect(() => {
-    if (lastExamResult && !showResults) {
-      setShowResults(true);
-      setExamCompleted(true);
-      setIsTimerRunning(false);
+    // Clear previous results when exam changes
+    dispatch(clearLastExamResult());
+    setShowResults(false);
+    setExamCompleted(false);
+    setIsTimerRunning(false);
+  }, [dispatch, exam?._id]);
+
+  // Handle exam result only when it matches current exam context
+  useEffect(() => {
+    if (!lastExamResult) return;
+    // If backend includes examId, ensure it matches current exam
+    if (lastExamResult.examId && exam?._id && String(lastExamResult.examId) !== String(exam._id)) {
+      return;
     }
-  }, [lastExamResult]);
+    setShowResults(true);
+    setExamCompleted(true);
+    setIsTimerRunning(false);
+  }, [lastExamResult, exam?._id]);
 
   const formatTime = (seconds) => {
     // Ensure seconds is a valid number
@@ -108,7 +117,6 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
   const handleStartExam = () => {
     setExamStarted(true);
     setIsTimerRunning(true);
-    setShowDetailedReview(false);
     startTimeRef.current = Date.now();
   };
 
@@ -129,26 +137,6 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
     }
-  };
-
-  const fetchExamWithAnswers = async () => {
-    try {
-      setLoadingAnswers(true);
-      const response = await axiosInstance.get(`/exams/${exam._id}/details`);
-      setExamWithAnswers(response.data.data);
-    } catch (error) {
-      console.error('Failed to fetch exam details:', error);
-      toast.error('فشل في تحميل تفاصيل الامتحان');
-    } finally {
-      setLoadingAnswers(false);
-    }
-  };
-
-  const handleDetailedReview = async () => {
-    if (!examWithAnswers) {
-      await fetchExamWithAnswers();
-    }
-    setShowDetailedReview(true);
   };
 
   const handleSubmitExam = () => {
@@ -253,7 +241,7 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
         </div>
 
         <div className="space-y-3">
-          {question.options.map((option, optionIndex) => (
+          {question.options.slice(0, question.numberOfOptions || 4).map((option, optionIndex) => (
             <label
               key={optionIndex}
               className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
@@ -315,176 +303,6 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
       </div>
     </div>
   );
-
-  const renderDetailedReview = () => {
-    if (!lastExamResult || !examWithAnswers) return null;
-
-    const questionsWithAnswers = examWithAnswers.questions || questions;
-
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">مراجعة تفصيلية للامتحان</h3>
-          <button
-            onClick={() => setShowDetailedReview(false)}
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-          >
-            العودة للنتائج
-          </button>
-        </div>
-
-        {loadingAnswers ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <span className="mr-3 text-gray-600 dark:text-gray-400">جاري تحميل تفاصيل الامتحان...</span>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {questionsWithAnswers.map((question, index) => {
-              const userAnswer = answers[index];
-              const isCorrect = userAnswer === question.correctAnswer;
-              const userAnswerText = userAnswer !== undefined ? question.options[userAnswer] : 'لم يتم الإجابة';
-              const correctAnswerText = question.options[question.correctAnswer];
-              const isAnswered = userAnswer !== undefined;
-
-            return (
-              <div key={index} className={`border rounded-lg p-4 ${
-                isCorrect ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-red-200 bg-red-50 dark:bg-red-900/20'
-              }`}>
-                {/* Question Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    السؤال {index + 1} من {totalQuestions}
-                  </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    isCorrect 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  }`}>
-                    {isCorrect ? 'صحيح' : 'خاطئ'}
-                  </span>
-                </div>
-
-                {/* Question Image */}
-                {question.image && (
-                  <div className="mb-3 flex justify-center">
-                    <div className="w-32 h-32 md:w-40 md:h-40 rounded-lg shadow-md overflow-hidden">
-                      <img 
-                        src={generateImageUrl(question.image)}
-                        alt="صورة السؤال" 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error('Failed to load image:', question.image);
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Question Text */}
-                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 leading-relaxed">
-                  {question.question}
-                </h4>
-
-                {/* Options with highlighting */}
-                <div className="space-y-2 mb-4">
-                  {question.options.map((option, optionIndex) => {
-                    let optionClass = "p-3 rounded-lg border-2 ";
-                    let textClass = "text-gray-700 dark:text-gray-300";
-                    
-                    if (optionIndex === question.correctAnswer) {
-                      optionClass += "border-green-500 bg-green-100 dark:bg-green-900/30";
-                      textClass = "text-green-800 dark:text-green-200 font-semibold";
-                    } else if (optionIndex === userAnswer && !isCorrect) {
-                      optionClass += "border-red-500 bg-red-100 dark:bg-red-900/30";
-                      textClass = "text-red-800 dark:text-red-200 font-semibold";
-                    } else {
-                      optionClass += "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700";
-                    }
-
-                    return (
-                      <div key={optionIndex} className={optionClass}>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            optionIndex === question.correctAnswer
-                              ? 'border-green-500 bg-green-500'
-                              : optionIndex === userAnswer && !isCorrect
-                              ? 'border-red-500 bg-red-500'
-                              : 'border-gray-300 dark:border-gray-500'
-                          }`}>
-                            {optionIndex === question.correctAnswer && (
-                              <div className="w-2 h-2 bg-white rounded-full"></div>
-                            )}
-                            {optionIndex === userAnswer && !isCorrect && (
-                              <div className="w-2 h-2 bg-white rounded-full"></div>
-                            )}
-                          </div>
-                          <span className={textClass}>
-                            {option}
-                            {optionIndex === question.correctAnswer && (
-                              <span className="mr-2 text-green-600 dark:text-green-400">✓ (الإجابة الصحيحة)</span>
-                            )}
-                            {optionIndex === userAnswer && !isCorrect && (
-                              <span className="mr-2 text-red-600 dark:text-red-400">✗ (إجابتك)</span>
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Answer Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  <div className="bg-white dark:bg-gray-700 rounded-lg p-3">
-                    <span className="text-gray-600 dark:text-gray-400">إجابتك:</span>
-                    <span className={`mr-2 font-medium ${
-                      isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {userAnswerText}
-                    </span>
-                  </div>
-                  <div className="bg-white dark:bg-gray-700 rounded-lg p-3">
-                    <span className="text-gray-600 dark:text-gray-400">الإجابة الصحيحة:</span>
-                    <span className="mr-2 font-medium text-green-600 dark:text-green-400">
-                      {correctAnswerText}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Explanation if available */}
-                {question.explanation && (
-                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <span className="text-sm font-medium text-blue-800 dark:text-blue-200">شرح:</span>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1 text-right">
-                      {question.explanation}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        )}
-
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={() => setShowDetailedReview(false)}
-            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-          >
-            العودة للنتائج
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-          >
-            إغلاق
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   const renderResults = () => {
     if (!lastExamResult) return null;
@@ -554,32 +372,19 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
             <span className="text-gray-700 dark:text-gray-300">الإجابات الخاطئة</span>
             <span className="font-semibold text-red-600 dark:text-red-400">{wrongAnswers}</span>
           </div>
+          
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span className="text-gray-700 dark:text-gray-300">الوقت المستغرق</span>
+            <span className="font-semibold text-blue-600 dark:text-blue-400">{timeTaken} دقيقة</span>
+          </div>
         </div>
 
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={handleDetailedReview}
-            disabled={loadingAnswers}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
-          >
-            {loadingAnswers ? 'جاري التحميل...' : 'مراجعة تفصيلية'}
-          </button>
+        <div className="mt-6">
           <button
             onClick={onClose}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
           >
             إغلاق
-          </button>
-          <button
-            onClick={() => {
-              setExamStarted(false);
-              setShowResults(false);
-              setShowDetailedReview(false);
-              dispatch(clearLastExamResult());
-            }}
-            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-          >
-            إعادة الامتحان
           </button>
         </div>
       </div>
@@ -592,7 +397,7 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
       <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-600 text-white p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">{exam.title}</h2>
@@ -651,7 +456,7 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
             </div>
           ) : showResults ? (
             // Results Screen
-            showDetailedReview ? renderDetailedReview() : renderResults()
+            renderResults()
           ) : (
             // Exam Interface
             <div className="space-y-6">
@@ -670,7 +475,8 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
                       disabled={currentQuestionIndex === 0}
                       className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50"
                     >
-                      <FaChevronLeft />
+                      <FaChevronRight />
+                      
                       السابق
                     </button>
                     
@@ -689,7 +495,7 @@ const ExamModal = ({ isOpen, onClose, exam, courseId, lessonId, unitId, examType
                       className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50"
                     >
                       التالي
-                      <FaChevronRight />
+                      <FaChevronLeft />
                     </button>
                   </div>
                 </div>

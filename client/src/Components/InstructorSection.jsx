@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFeaturedInstructors } from '../Redux/Slices/InstructorSlice';
-import { FaGraduationCap, FaStar, FaUsers, FaBook, FaClock, FaLinkedin, FaTwitter, FaGlobe, FaTimes, FaAward, FaArrowRight } from 'react-icons/fa';
+import { FaGraduationCap, FaStar, FaUsers, FaBook, FaClock, FaLinkedin, FaTwitter, FaFacebook, FaWhatsapp, FaTimes, FaAward, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { generateImageUrl } from '../utils/fileUtils';
+import { generateImageUrl } from "../utils/fileUtils";
+import { placeholderImages } from "../utils/placeholderImages";
 
 const InstructorSection = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,11 @@ const InstructorSection = () => {
   const closeModal = () => {
     setShowModal(false);
     setSelectedInstructor(null);
+  };
+
+  const handleImgError = (e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = placeholderImages.avatar;
   };
 
   const renderStars = (rating) => {
@@ -46,7 +52,7 @@ const InstructorSection = () => {
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-6">
             تعلم من أفضل الخبراء للتعلم
             </h2>
-            <div className="w-24 h-1 bg-blue-500 mx-auto mb-6"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-yellow-500 mx-auto mb-6"></div>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               مدرسونا لديهم خبرة واسعة ونهج تعليمي متميز لضمان تجربة تعليمية استثنائية
             </p>
@@ -75,7 +81,7 @@ const InstructorSection = () => {
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-6">
               تعلم من أفضل الخبراء  
             </h2>
-            <div className="w-24 h-1 bg-blue-500 mx-auto mb-6"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-yellow-500 mx-auto mb-6"></div>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               مدرسونا لديهم خبرة واسعة ونهج تعليمي متميز لضمان تجربة تعليمية استثنائية
             </p>
@@ -89,24 +95,17 @@ const InstructorSection = () => {
                 className="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer"
                 onClick={() => handleInstructorClick(instructor)}
               >
-                {/* Large Instructor Photo */}
-                <div className="relative w-full h-48 overflow-hidden">
-                                     {instructor.profileImage?.secure_url ? (
-                     <img
-                       src={generateImageUrl(instructor.profileImage.secure_url)}
-                       alt={instructor.name}
-                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                       onError={(e) => {
-                         if (e.target && e.target.style) {
-                           e.target.style.display = 'none';
-                         }
-                         if (e.target && e.target.nextSibling && e.target.nextSibling.style) {
-                           e.target.nextSibling.style.display = 'flex';
-                         }
-                       }}
-                     />
-                   ) : (
-                    <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                {/* Large Instructor Photo - modern and fully visible */}
+                <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-blue-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                  {instructor.profileImage?.secure_url ? (
+                    <img
+                      src={generateImageUrl(instructor.profileImage.secure_url)}
+                      alt={instructor.name}
+                      className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      onError={handleImgError}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
                       <FaGraduationCap className="text-gray-400 dark:text-gray-500 text-6xl" />
                     </div>
                   )}
@@ -131,7 +130,7 @@ const InstructorSection = () => {
 
                   {/* Clickable Arrow Icon */}
                   <div className="flex justify-end">
-                    <div className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors duration-200 group-hover:scale-110">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-yellow-500 hover:from-blue-600 hover:to-yellow-600 text-white rounded-full flex items-center justify-center transition-colors duration-200 group-hover:scale-110">
                       <FaArrowRight className="text-sm" />
                     </div>
                   </div>
@@ -144,7 +143,7 @@ const InstructorSection = () => {
           <div className="text-center mt-16">
             <Link
               to="/instructors"
-              className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200"
+              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
             >
               عرض جميع المدرسين
               <FaGraduationCap className="mr-2" />
@@ -172,22 +171,17 @@ const InstructorSection = () => {
             <div className="p-6">
               {/* Instructor Header */}
               <div className="text-center mb-8">
-                                 {selectedInstructor.profileImage?.secure_url ? (
-                   <img
-                     src={generateImageUrl(selectedInstructor.profileImage.secure_url)}
-                     alt={selectedInstructor.name}
-                     className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-gray-200 dark:border-gray-600 shadow-lg"
-                     onError={(e) => {
-                       if (e.target && e.target.style) {
-                         e.target.style.display = 'none';
-                       }
-                       if (e.target && e.target.nextSibling && e.target.nextSibling.style) {
-                         e.target.nextSibling.style.display = 'flex';
-                       }
-                     }}
-                   />
-                 ) : (
-                  <div className="w-32 h-32 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-gray-200 dark:border-gray-600 shadow-lg">
+                {selectedInstructor.profileImage?.secure_url ? (
+                  <div className="w-28 h-28 rounded-xl bg-gray-100 dark:bg-gray-700 mx-auto mb-4 overflow-hidden flex items-center justify-center ring-1 ring-gray-200 dark:ring-gray-600">
+                    <img
+                      src={generateImageUrl(selectedInstructor.profileImage.secure_url)}
+                      alt={selectedInstructor.name}
+                      className="max-w-full max-h-full object-contain"
+                      onError={handleImgError}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-32 h-32 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center mx-auto mb-4 border-4 border-gray-200 dark:border-gray-600 shadow-lg">
                     <FaGraduationCap className="text-gray-400 dark:text-gray-500 text-4xl" />
                   </div>
                 )}
@@ -196,7 +190,7 @@ const InstructorSection = () => {
                   {selectedInstructor.name}
                 </h3>
                 
-                <div className="inline-flex items-center bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full font-semibold mb-4">
+                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-yellow-100 dark:from-blue-900/30 dark:to-yellow-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full font-semibold mb-4">
                   <FaGraduationCap className="ml-2" />
                   {selectedInstructor.specialization}
                 </div>
@@ -231,48 +225,69 @@ const InstructorSection = () => {
               )}
 
               {/* Social Links */}
-              {(selectedInstructor.socialLinks?.linkedin || selectedInstructor.socialLinks?.twitter || selectedInstructor.socialLinks?.website) && (
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">روابط التواصل</h4>
-                  <div className="flex items-center justify-center gap-4">
-                    {selectedInstructor.socialLinks?.linkedin && (
-                      <a
-                        href={selectedInstructor.socialLinks.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors"
-                      >
-                        <FaLinkedin className="text-sm" />
-                      </a>
-                    )}
-                    {selectedInstructor.socialLinks?.twitter && (
-                      <a
-                        href={selectedInstructor.socialLinks.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-blue-400 hover:bg-blue-500 text-white rounded-full flex items-center justify-center transition-colors"
-                      >
-                        <FaTwitter className="text-sm" />
-                      </a>
-                    )}
-                    {selectedInstructor.socialLinks?.website && (
-                      <a
-                        href={selectedInstructor.socialLinks.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-gray-600 hover:bg-gray-700 text-white rounded-full flex items-center justify-center transition-colors"
-                      >
-                        <FaGlobe className="text-sm" />
-                      </a>
-                    )}
+              {(() => {
+                                 const hasSocialLinks = (
+                   (selectedInstructor.socialLinks?.linkedin && selectedInstructor.socialLinks.linkedin.trim() !== '') ||
+                   (selectedInstructor.socialLinks?.twitter && selectedInstructor.socialLinks.twitter.trim() !== '') ||
+                   (selectedInstructor.socialLinks?.facebook && selectedInstructor.socialLinks.facebook.trim() !== '') ||
+                   (selectedInstructor.socialLinks?.whatsapp && selectedInstructor.socialLinks.whatsapp.trim() !== '')
+                 );
+                
+                if (!hasSocialLinks) return null;
+                
+                return (
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">روابط التواصل</h4>
+                    <div className="flex items-center justify-center gap-4">
+                      {selectedInstructor.socialLinks?.linkedin && selectedInstructor.socialLinks.linkedin.trim() !== '' && (
+                        <a
+                          href={selectedInstructor.socialLinks.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-gradient-to-r from-blue-500 to-yellow-500 hover:from-blue-600 hover:to-yellow-600 text-white rounded-full flex items-center justify-center transition-colors"
+                        >
+                          <FaLinkedin className="text-sm" />
+                        </a>
+                      )}
+                      {selectedInstructor.socialLinks?.twitter && selectedInstructor.socialLinks.twitter.trim() !== '' && (
+                        <a
+                          href={selectedInstructor.socialLinks.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-gradient-to-r from-blue-500 to-yellow-500 hover:from-blue-600 hover:to-yellow-600 text-white rounded-full flex items-center justify-center transition-colors"
+                        >
+                          <FaTwitter className="text-sm" />
+                        </a>
+                      )}
+                                             {selectedInstructor.socialLinks?.facebook && selectedInstructor.socialLinks.facebook.trim() !== '' && (
+                         <a
+                           href={selectedInstructor.socialLinks.facebook}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="w-12 h-12 bg-gradient-to-r from-blue-500 to-yellow-500 hover:from-blue-600 hover:to-yellow-600 text-white rounded-full flex items-center justify-center transition-colors"
+                         >
+                           <FaFacebook className="text-sm" />
+                         </a>
+                       )}
+                      {selectedInstructor.socialLinks?.whatsapp && selectedInstructor.socialLinks.whatsapp.trim() !== '' && (
+                        <a
+                          href={`https://wa.me/${selectedInstructor.socialLinks.whatsapp.replace(/[^0-9]/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center transition-colors"
+                        >
+                          <FaWhatsapp className="text-sm" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Featured Badge */}
               {selectedInstructor.featured && (
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full font-bold">
+                  <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-blue-500 text-white px-6 py-3 rounded-full font-bold">
                     <FaAward className="ml-2" />
                     مدرس مميز
                   </div>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FaArrowRight, FaPlay, FaStar, FaUsers, FaGraduationCap, FaAward, FaRocket, FaGlobe, FaFlask, FaAtom, FaMicroscope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import mr from '../assets/mr.png';
 
 const AnimatedHero = ({ onGetStarted }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const user = useSelector((state) => state.auth.data);
 
   useEffect(() => {
     setIsVisible(true);
@@ -90,25 +92,22 @@ const AnimatedHero = ({ onGetStarted }) => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4 justify-end">
-                <button 
-                  onClick={onGetStarted}
-                  className="group relative px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-full text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-sans"
+              {user?.fullName ? (
+                <a
+                  href="/subjects"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white rounded-lg font-bold text-lg shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  <span className="flex items-center gap-2 justify-center">
-                    ابدأ التعلم
-                    <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
-                  </span>
-                </button>
-                
-                <button 
-                  onClick={handleExploreCourses}
-                  className="group px-6 py-3 md:px-8 md:py-4 border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-semibold rounded-full text-base md:text-lg hover:bg-blue-600 hover:text-white transition-all duration-300 font-sans"
+                  ابدأ التعلم
+                </a>
+              ) : (
+                <a
+                  href="/signup"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white rounded-lg font-bold text-lg shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  <span className="flex items-center gap-2 justify-center">
-                    <FaPlay className="group-hover:scale-110 transition-transform duration-300" />
-                    استكشف الدورات
-                  </span>
-                </button>
+                  سجل الآن
+                </a>
+              )}
+              
               </div>
             </div>
           </div>
