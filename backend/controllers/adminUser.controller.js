@@ -78,7 +78,6 @@ const getAllUsers = async (req, res, next) => {
                     adminPermissions: user.adminPermissions || [],
                     isActive: user.isActive !== false, // Default to true if not set
                     governorate: user.governorate,
-                    grade: user.grade,
                     stage: user.stage,
                     age: user.age,
                     walletBalance: user.wallet?.balance || 0,
@@ -233,7 +232,8 @@ const getUserDetails = async (req, res, next) => {
         const { userId } = req.params;
 
         const user = await userModel.findById(userId)
-            .select('-password -forgotPasswordToken -forgotPasswordExpiry');
+            .select('-password -forgotPasswordToken -forgotPasswordExpiry')
+            .populate('stage', 'name');
 
         if (!user) {
             return next(new AppError("User not found", 404));
@@ -259,7 +259,7 @@ const getUserDetails = async (req, res, next) => {
                     phoneNumber: user.phoneNumber,
                     fatherPhoneNumber: user.fatherPhoneNumber,
                     governorate: user.governorate,
-                    grade: user.grade,
+                    stage: user.stage,
                     age: user.age,
                     role: user.role,
                     isActive: user.isActive !== false,
@@ -501,6 +501,9 @@ const updateUser = async (req, res, next) => {
         });
 
         await user.save();
+
+        // Populate stage information before sending response
+        await user.populate('stage', 'name');
 
         res.status(200).json({
             success: true,

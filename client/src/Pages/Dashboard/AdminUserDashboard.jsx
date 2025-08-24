@@ -1228,7 +1228,7 @@ export default function AdminUserDashboard() {
                                                 onChange={(e) => setCreateUserForm({...createUserForm, role: e.target.value})}
                                                 className="ml-2"
                                             />
-                                            طالب (USER)
+                                                طالب
                                         </label>
                                         {canCreateAdmin && (
                                             <label className="flex items-center">
@@ -1240,7 +1240,7 @@ export default function AdminUserDashboard() {
                                                     onChange={(e) => setCreateUserForm({...createUserForm, role: e.target.value})}
                                                     className="ml-2"
                                                 />
-                                                مدير (ADMIN)
+                                                    مدير
                                             </label>
                                         )}
                                     </div>
@@ -1449,7 +1449,7 @@ export default function AdminUserDashboard() {
                                             {userToDeleteInfo.email}
                                         </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            الدور: {userToDeleteInfo.role === 'SUPER_ADMIN' ? 'مدير مميز' : userToDeleteInfo.role === 'ADMIN' ? 'مدير' : 'مستخدم'}
+                                            الدور: {userToDeleteInfo.role === 'SUPER_ADMIN' ? 'مدير مميز' : userToDeleteInfo.role === 'ADMIN' ? 'مدير' : 'طالب'}
                                         </p>
                                     </div>
                                 )}
@@ -1515,7 +1515,7 @@ export default function AdminUserDashboard() {
                                             </p>
                                             <div className="flex items-center space-x-2 mt-2">
                                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(selectedUser.role)}`}>
-                                                    {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'مستخدم'}
+                                                    {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'طالب'}
                                                 </span>
                                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedUser.isActive)}`}>
                                                     {selectedUser.isActive ? 'نشط' : 'غير نشط'}
@@ -1768,17 +1768,17 @@ export default function AdminUserDashboard() {
                                                         onChange={(e) => setEditForm({...editForm, role: e.target.value})}
                                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                                                     >
-                                                        <option value="USER">مستخدم</option>
+                                                        <option value="USER">طالب</option>
                                                         <option value="ADMIN">مدير</option>
                                                     </select>
                                                 ) : (
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(selectedUser.role)}`}>
-                                                        {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'مستخدم'}
+                                                        {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'طالب'}
                                                     </span>
                                                 )
                                             ) : (
                                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(selectedUser.role)}`}>
-                                                    {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'مستخدم'}
+                                                    {selectedUser.role === 'SUPER_ADMIN' ? 'مدير مميز' : selectedUser.role === 'ADMIN' ? 'مدير' : 'طالب'}
                                                 </span>
                                             )}
                                         </div>
