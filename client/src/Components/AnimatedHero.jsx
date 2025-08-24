@@ -68,7 +68,7 @@ const AnimatedHero = ({ onGetStarted }) => {
                 </span>
                 <br />
                 <span className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-gray-700 dark:text-gray-300">
-                  خبير في الكيمياء ومدرس العلوم المتكاملة!
+                  مدرس في الكيمياء والعلوم المتكاملة!
                 </span>
               </h1>
               
@@ -124,7 +124,7 @@ const AnimatedHero = ({ onGetStarted }) => {
                 <div className="w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[460px] lg:h-[460px] rounded-full border-4 border-blue-600 shadow-2xl overflow-hidden">
                   <img
                     src={mr} 
-                    alt="مستر محمود عبدالعزيز - خبير في الكيمياء" 
+                    alt="مستر محمود عبدالعزيز - مدرس في الكيمياء" 
                     className="w-full h-full rounded-full p-2 object-cover drop-shadow-2xl transform hover:scale-105 transition-transform duration-500 "
                   />
                 </div>

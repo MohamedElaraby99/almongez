@@ -63,9 +63,9 @@ export default function Contact() {
   }
 
   const contactInfo = {
-    phone: "01080808667",
-    whatsapp: "01555559887",
-    vodafoneCash: "01080808667",
+    phone: "01125800332",
+    whatsapp: "01125800332",
+    vodafoneCash: "01125800332",
     email: "softwarefikra@gmail.com",
     support: "softwarefikra@gmail.com",
     address: "Mansoura, 18 Street Torel, Egypt",
@@ -74,8 +74,8 @@ export default function Contact() {
   };
 
   const socialMedia = [
-    { name: "Facebook", icon: FaFacebook, url: "https://www.facebook.com/share/16Vq29HcXH/", color: "hover:text-blue-600" },
-    { name: "YouTube", icon: FaYoutube, url: "https://youtube.com/@_aymanalmongezz9685?si=X_KXTLDEsxNG5tAs", color: "hover:text-blue-600" },
+    { name: "Facebook", icon: FaFacebook, url: "https://www.facebook.com/people/MrMahmoud-Abdel-Aziz/100070094625467/?mibextid=ZbWKwL", color: "hover:text-blue-600" },
+    { name: "YouTube", icon: FaYoutube, url: "https://www.youtube.com/@mahmoudAbdel_Aziz", color: "hover:text-blue-600" },
     { name: "WhatsApp", icon: FaWhatsapp, url: `https://wa.me/${contactInfo.whatsapp.replace('+', '')}`, color: "hover:text-green-500" }
   ];
 

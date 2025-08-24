@@ -170,7 +170,7 @@ export default function HomePage() {
     { icon: FaUsers, number: "10K+", label: "طالب مسجل", color: "text-blue-600" },
     { icon: FaGraduationCap, number: "100+", label: "مادة متاحة", color: "text-green-600" },
     { icon: FaStar, number: "4.9", label: "متوسط التقييم", color: "text-yellow-600" },
-    { icon: FaAward, number: "50+", label: "مدرس خبير", color: "text-blue-600" }
+    { icon: FaAward, number: "50+", label: "مدرس مدرس", color: "text-blue-600" }
   ];
 
   const features = [
@@ -183,7 +183,7 @@ export default function HomePage() {
     },
     {
       icon: FaLightbulb,
-      title: "دورات بقيادة الخبراء",
+      title: "مواد بقيادة الخبراء",
       description: "تعلم من المحترفين في المجال مع سنوات من الخبرة العملية.",
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-900/20"
@@ -390,7 +390,7 @@ export default function HomePage() {
               المواد الدراسية
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              اكتشف دوراتنا الأكثر شعبية وأعلى تقييماً
+              اكتشف موادنا الأكثر شعبية وأعلى تقييماً
             </p>
           </div>
 
@@ -424,10 +424,10 @@ export default function HomePage() {
             <div className="text-center py-12">
               <div className="text-6xl mb-4 animate-bounce">📚</div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-                لا توجد دورات مميزة بعد
+                لا توجد مواد مميزة بعد
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                عد قريباً لدورات رائعة!
+                عد قريباً لمواد رائعة!
               </p>
             </div>
           )}
@@ -450,17 +450,17 @@ export default function HomePage() {
           }`}
           style={{ transitionDelay: '2400ms' }}>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              الكورسات المتاحة
+              المواد المتاحة
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              اكتشف مجموعة واسعة من الكورسات التعليمية المميزة بقيادة خبراء الصناعة
+              اكتشف مجموعة واسعة من المواد التعليمية المميزة بقيادة خبراء الصناعة
             </p>
           </div>
 
           {featuredLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-400">جاري تحميل الكورسات المميزة...</p>
+              <p className="text-gray-600 dark:text-gray-400">جاري تحميل المواد المميزة...</p>
             </div>
           ) : featuredCourses && featuredCourses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -617,10 +617,10 @@ export default function HomePage() {
             <div className="text-center py-12">
               <div className="text-6xl mb-4 animate-pulse">📚</div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-                لا توجد دورات متاحة حالياً
+                لا توجد مواد متاحة حالياً
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                سيتم إضافة دورات جديدة قريباً!
+                سيتم إضافة مواد جديدة قريباً!
               </p>
             </div>
           )}
@@ -632,7 +632,7 @@ export default function HomePage() {
                 to="/courses"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
-                <span>عرض جميع الكورسات  </span>
+                <span>عرض جميع المواد  </span>
                 <FaArrowRight />
               </Link>
             </div>
@@ -787,7 +787,7 @@ export default function HomePage() {
                           هل أنت مستعد لبدء رحلة التعلم؟
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              انضم إلى آلاف المتعلمين الذين نجحوا بالفعل في تغيير حياتهم المهنية من خلال دوراتنا التدريبية التي يقدمها خبراؤنا.
+              انضم إلى آلاف المتعلمين الذين نجحوا بالفعل في تغيير حياتهم المهنية من خلال موادنا التدريبية التي يقدمها خبراؤنا.
             </p>
           </div>
           <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-700 ease-out ${
@@ -949,10 +949,10 @@ export default function HomePage() {
                       <div className="space-y-4">
                         <div className="bg-gradient-to-r from-blue-50 to-blue-50 rounded-xl p-4">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-semibold text-gray-900">الأحياء</h4>
+                            <h4 className="font-semibold text-gray-900">الكيمياء</h4>
                             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">جديد</span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-3"> الأحياء </p>
+                          <p className="text-sm text-gray-600 mb-3"> الكيمياء </p>
                           <div className="flex justify-between items-center">
                             <span className="text-sm text-blue-600 font-medium">30% مكتمل</span>
                             <button className="bg-blue-600 text-white px-4 py-1 rounded-full text-xs">متابعة</button>
@@ -1057,8 +1057,8 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">الهاتف</h3>
-                  <a href="tel:01080808667" className="text-blue-600 dark:text-blue-400 hover:underline">
-                    01080808667
+                  <a href="tel:01125800332" className="text-blue-600 dark:text-blue-400 hover:underline">
+                    01125800332
                   </a>
                 </div>
               </div>
@@ -1070,8 +1070,8 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">واتساب</h3>
-                  <a href="https://wa.me/+201555559887" className="text-green-600 dark:text-green-400 hover:underline">
-                  +201555559887
+                  <a href="https://wa.me/+201125800332" className="text-green-600 dark:text-green-400 hover:underline">
+                  +201125800332
                   </a>
                 </div>
               </div>
@@ -1084,7 +1084,7 @@ export default function HomePage() {
               </h3>
               <div className="flex flex-wrap justify-center gap-6 max-w-md mx-auto">
                 <a
-                  href="https://www.facebook.com/share/16Vq29HcXH/"
+                  href="https://www.facebook.com/people/MrMahmoud-Abdel-Aziz/100070094625467/?mibextid=ZbWKwL"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:text-blue-600 hover:scale-105"
@@ -1098,7 +1098,7 @@ export default function HomePage() {
                   </span>
                 </a>
                 <a
-                  href="https://youtube.com/@_aymanalmongezz9685?si=X_KXTLDEsxNG5tAs"
+                  href="https://www.youtube.com/@mahmoudAbdel_Aziz"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:text-blue-600 hover:scale-105"
@@ -1112,7 +1112,7 @@ export default function HomePage() {
                   </span>
                 </a>
                 <a
-                  href="https://wa.me/01555559887"
+                  href="https://wa.me/01125800332"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:text-green-500 hover:scale-105"
@@ -1212,7 +1212,7 @@ export default function HomePage() {
 
       {/* Floating WhatsApp Button */}
       <a
-        href="https://wa.me/+201555559887"
+        href="https://wa.me/+201125800332"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed left-8 bottom-8 z-50 p-4 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 group animate-bounce"
