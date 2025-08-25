@@ -56,7 +56,7 @@ export default function ForgotPassword() {
           {/* submit btn */}
           <button
             type="submit"
-            className="mt-2 bg-yellow-500 text-white dark:text-base-200  transition-all ease-in-out duration-300 rounded-md py-2 font-nunito-sans font-[500]  text-lg cursor-pointer"
+            className="mt-2 bg-blue-500 text-white dark:text-base-200  transition-all ease-in-out duration-300 rounded-md py-2 font-nunito-sans font-[500]  text-lg cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? "sending email..." : "Send Email"}

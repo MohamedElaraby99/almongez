@@ -15,7 +15,7 @@ const AnimatedHero = ({ onGetStarted }) => {
   const stats = [
     { icon: FaUsers, number: "5K+", label: "طلاب مسجلين", color: "text-blue-600" },
     { icon: FaFlask, number: "200+", label: "تجربة كيميائية", color: "text-green-600" },
-    { icon: FaStar, number: "4.9", label: "متوسط التقييم", color: "text-yellow-600" },
+    { icon: FaStar, number: "4.9", label: "متوسط التقييم", color: "text-blue-600" },
     { icon: FaAward, number: "15+", label: "سنوات خبرة", color: "text-purple-600" }
   ];
 

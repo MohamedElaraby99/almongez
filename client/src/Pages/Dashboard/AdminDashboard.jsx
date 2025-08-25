@@ -693,7 +693,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => navigate("/admin/exam-search")}
-                  className="group p-3 lg:p-4 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg lg:rounded-xl text-white hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 transform hover:scale-105"
+                  className="group p-3 lg:p-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg lg:rounded-xl text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
                 >
                   <FaClipboardList className="text-lg lg:text-2xl mx-auto mb-1 lg:mb-2 group-hover:scale-110 transition-transform duration-200" />
                   <span className="text-xs lg:text-sm font-medium">نتائج الطلاب</span>
@@ -808,16 +808,16 @@ export default function AdminDashboard() {
 
 
                 {/* الجلسات المباشرة */}
-                <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 lg:p-6 text-white hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 transform hover:scale-105 cursor-pointer shadow-lg hover:shadow-xl" onClick={() => navigate("/admin/live-meetings")}>
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 lg:p-6 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 cursor-pointer shadow-lg hover:shadow-xl" onClick={() => navigate("/admin/live-meetings")}>
                   <div className="flex items-center justify-between mb-3">
-                    <FaVideo className="text-2xl lg:text-3xl text-yellow-200" />
-                    <div className="w-3 h-3 bg-yellow-200 rounded-full animate-pulse"></div>
+                    <FaVideo className="text-2xl lg:text-3xl text-blue-200" />
+                    <div className="w-3 h-3 bg-blue-200 rounded-full animate-pulse"></div>
                   </div>
                   <h4 className="text-lg lg:text-xl font-bold mb-2">الجلسات المباشرة</h4>
-                  <p className="text-yellow-100 text-sm lg:text-base opacity-90">إدارة الجلسات المباشرة</p>
+                  <p className="text-blue-100 text-sm lg:text-base opacity-90">إدارة الجلسات المباشرة</p>
                   <div className="mt-4 flex items-center justify-between">
-                    <span className="text-xs text-yellow-200">إدارة كاملة</span>
-                    <FaArrowUp className="text-yellow-200 transform rotate-45" />
+                    <span className="text-xs text-blue-200">إدارة كاملة</span>
+                    <FaArrowUp className="text-blue-200 transform rotate-45" />
                   </div>
                 </div>
 

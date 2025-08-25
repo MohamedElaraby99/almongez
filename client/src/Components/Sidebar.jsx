@@ -332,7 +332,7 @@ export default function Sidebar({ hideBar = false }) {
                 {/* User Avatar */}
                 <Link 
                   to="/user/profile" 
-                  className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-yellow-600 flex items-center justify-center text-white font-bold text-xs shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-white dark:border-gray-700"
+                  className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border-2 border-white dark:border-gray-700"
                   onClick={closeSidebar}
                 >
                   {data?.avatar?.secure_url ? (
@@ -387,7 +387,7 @@ export default function Sidebar({ hideBar = false }) {
                 <Link 
                   to="/login" 
                   onClick={closeSidebar}
-                  className="w-full group relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-500 to-yellow-600 p-0.5 hover:from-blue-600 hover:to-yellow-700 transition-all duration-300"
+                  className="w-full group relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-0.5 hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
                 >
                   <div className="relative flex items-center justify-center gap-2 rounded-[8px] bg-white dark:bg-gray-800 px-3 py-2 transition-all duration-300 group-hover:bg-transparent">
                     <div className="relative z-10 flex items-center gap-2">

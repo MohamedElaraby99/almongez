@@ -171,7 +171,7 @@ const InstructorDashboard = () => {
       stars.push(
         <FaStar
           key={i}
-          className={`text-sm ${i <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+          className={`text-sm ${i <= rating ? 'text-blue-400' : 'text-gray-300'}`}
         />
       );
     }
@@ -277,7 +277,7 @@ const InstructorDashboard = () => {
                     </div>
                   </div>
                   {instructor.featured && (
-                    <span className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-semibold">
+                    <span className="bg-blue-400 text-blue-900 px-2 py-1 rounded-full text-xs font-semibold">
                       مميز
                     </span>
                   )}

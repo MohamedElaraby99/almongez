@@ -77,7 +77,7 @@ const PurchaseSuccess = ({
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Amount Paid</span>
                 <div className="flex items-center gap-1">
-                  <FaCoins className="text-yellow-500 text-xs" />
+                  <FaCoins className="text-blue-500 text-xs" />
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {amount} EGP
                   </span>

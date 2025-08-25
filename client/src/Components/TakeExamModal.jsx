@@ -204,7 +204,7 @@ const TakeExamModal = ({
   const getScoreColor = (score) => {
     if (score >= 90) return 'text-green-600';
     if (score >= 80) return 'text-blue-600';
-    if (score >= 70) return 'text-yellow-600';
+    if (score >= 70) return 'text-blue-600';
     return 'text-red-600';
   };
 
@@ -304,7 +304,7 @@ const TakeExamModal = ({
                       <span>Total Questions: {totalQuestions}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaTrophy className="text-yellow-500" />
+                      <FaTrophy className="text-blue-500" />
                       <span>Passing Score: {exam?.passingScore}%</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -489,7 +489,7 @@ const TakeExamModal = ({
                       onClick={() => setReviewMode(!reviewMode)}
                       className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm ${
                         reviewMode 
-                          ? 'bg-yellow-500 text-white' 
+                          ? 'bg-blue-500 text-white' 
                           : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                       }`}
                     >

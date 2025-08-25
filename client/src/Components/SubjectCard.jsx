@@ -20,7 +20,7 @@ const SubjectCard = ({ subject, showActions = false, onEdit, onDelete, onToggleF
         {/* Featured Badge */}
         {subject.featured && (
           <div className="absolute top-2 right-2">
-            <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">مميز</span>
+            <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">مميز</span>
           </div>
         )}
         {/* Play Button Overlay */}
@@ -58,7 +58,7 @@ const SubjectCard = ({ subject, showActions = false, onEdit, onDelete, onToggleF
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">   
           {/* Rating */}
           <div className="flex items-center gap-1">
-            <FaStar className="text-yellow-500" />
+            <FaStar className="text-blue-500" />
             <span>{(subject.rating || 5).toFixed(1)}</span>
           </div>
         </div>
@@ -75,7 +75,7 @@ const SubjectCard = ({ subject, showActions = false, onEdit, onDelete, onToggleF
               <button
                 onClick={() => onToggleFeatured && onToggleFeatured(subject._id)}
                 className={`px-3 py-1 rounded text-sm transition-colors ${
-                  subject.featured ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white'
+                  subject.featured ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white'
                 }`}
               >
                 {subject.featured ? 'إلغاء التميز' : 'تمييز'}

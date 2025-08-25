@@ -161,18 +161,20 @@ export default function Navbar() {
             {!user?.fullName && (
               <Link
                 to="/signup"
-                className="px-3 py-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-blue-300/30"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-400/40"
               >
-                سجل الآن
+                <FaPlus className="w-4 h-4" />
+                <span>سجل الآن</span>
               </Link>
             )}
 
-{!user?.fullName && (
+            {!user?.fullName && (
               <Link
                 to="/login"
-                className="px-3 py-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg border border-blue-300/30"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-semibold border-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-500 hover:via-blue-600 hover:to-blue-500 hover:text-white transition-all duration-300 shadow-md hover:shadow-xl"
               >
-                تسجيل الدخول
+                <FaUser className="w-4 h-4" />
+                <span>تسجيل الدخول</span>
               </Link>
             )}
 
@@ -213,13 +215,13 @@ export default function Navbar() {
                   to={item.path}
                   className={`flex items-center space-x-4 px-6 py-4 mx-4 rounded-2xl font-medium transition-all duration-300 mobile-menu-item ${
                     location.pathname === item.path
-                      ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 shadow-lg"
+                      ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 shadow-lg"
                       : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 dark:hover:from-gray-800 dark:hover:to-blue-900/20"
                   }`}
                 >
                   <div className={`p-3 rounded-xl shadow-lg ${
                     location.pathname === item.path
-                      ? "bg-gradient-to-r from-blue-100 to-yellow-100 dark:from-blue-900/30 dark:to-yellow-900/30"
+                      ? "bg-gradient-to-r from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30"
                       : "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
                   }`}>
                     <item.icon className="w-5 h-5" />
@@ -233,9 +235,9 @@ export default function Navbar() {
             {user && (
               <>
                 <div className="border-t border-gray-200/50 dark:border-gray-700/50 pt-6">
-                  <div className="px-6 py-4 mx-4 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 rounded-2xl shadow-lg">
+                  <div className="px-6 py-4 mx-4 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl shadow-lg">
                     <div className="flex items-center space-x-4">
-                      <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-yellow-600 rounded-2xl flex items-center justify-center shadow-xl">
+                      <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
                         <span className="text-white font-bold text-lg">
                           {user.fullName?.charAt(0)?.toUpperCase() || "U"}
                         </span>
@@ -269,13 +271,13 @@ export default function Navbar() {
                         to={item.path}
                         className={`flex items-center space-x-4 px-6 py-4 mx-4 rounded-2xl font-medium transition-all duration-300 mobile-menu-item ${
                           location.pathname === item.path
-                            ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 shadow-lg"
+                            ? "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 shadow-lg"
                             : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 dark:hover:from-gray-800 dark:hover:to-blue-900/20"
                         }`}
                       >
                         <div className={`p-3 rounded-xl shadow-lg ${
                           location.pathname === item.path
-                            ? "bg-gradient-to-r from-blue-100 to-yellow-100 dark:from-blue-900/30 dark:to-yellow-900/30"
+                            ? "bg-gradient-to-r from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30"
                             : "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
                         }`}>
                           <item.icon className="w-5 h-5" />
@@ -329,16 +331,16 @@ export default function Navbar() {
                 
                 <Link
                   to="/login"
-                  className="flex items-center justify-center gap-3 w-full px-8 py-4 text-center bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 mobile-menu-item shadow-lg hover:shadow-xl border-2 border-blue-400/50"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-2 text-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:from-blue-600 hover:via-blue-700 hover:to-blue-600 text-white rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-105 mobile-menu-item shadow-lg hover:shadow-xl border-2 border-blue-400/50"
                 >
-                  <FaUser className="w-5 h-5" />
+                  <FaUser className="w-4 h-4" />
                   تسجيل الدخول
                 </Link>
                 <Link
                   to="/signup"
-                  className="flex items-center justify-center gap-3 w-full px-8 py-4 text-center border-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-500 hover:via-blue-600 hover:to-yellow-500 hover:text-white rounded-2xl font-bold transition-all duration-300 mobile-menu-item shadow-lg hover:shadow-xl"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-2 text-center border-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-500 hover:via-blue-600 hover:to-blue-500 hover:text-white rounded-xl font-semibold text-sm transition-all duration-300 mobile-menu-item shadow-lg hover:shadow-xl"
                 >
-                  <FaPlus className="w-5 h-5" />
+                  <FaPlus className="w-4 h-4" />
                   إنشاء حساب جديد
                 </Link>
               </div>

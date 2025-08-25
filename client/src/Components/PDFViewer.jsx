@@ -232,7 +232,7 @@ const PDFViewer = ({
                     <p className="text-gray-300 text-xs sm:text-sm">Page {currentPage} of {totalPages}</p>
                   )}
                   {pageImages[0]?.isFallback && (
-                    <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
+                    <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
                       Fallback Mode
                     </span>
                   )}

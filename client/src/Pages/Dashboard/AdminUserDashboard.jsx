@@ -474,7 +474,7 @@ export default function AdminUserDashboard() {
         if (!password) return { strength: 'weak', color: 'text-gray-400', text: 'أدخل كلمة المرور' };
         if (password.length < 6) return { strength: 'weak', color: 'text-red-500', text: 'ضعيفة جداً' };
         if (password.length < 8) return { strength: 'medium', color: 'text-blue-500', text: 'متوسطة' };
-        if (password.length < 10) return { strength: 'good', color: 'text-yellow-500', text: 'جيدة' };
+        if (password.length < 10) return { strength: 'good', color: 'text-blue-500', text: 'جيدة' };
         return { strength: 'strong', color: 'text-green-500', text: 'قوية' };
     };
 
@@ -813,7 +813,7 @@ export default function AdminUserDashboard() {
                                                     </button>
                                                     <button
                                                         onClick={() => handleToggleStatus(user.id, user.isActive)}
-                                                        className="p-2 text-gray-500 hover:text-yellow-600 transition-colors"
+                                                        className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
                                                         title={user.isActive ? "إلغاء التفعيل" : "تفعيل"}
                                                     >
                                                         {user.isActive ? <FaToggleOn /> : <FaToggleOff />}
@@ -1001,7 +1001,7 @@ export default function AdminUserDashboard() {
                                                     </button>
                                                     <button
                                                         onClick={() => handleToggleStatus(user.id, user.isActive)}
-                                                        className="p-2 text-gray-500 hover:text-yellow-600 transition-colors"
+                                                        className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
                                                         title={user.isActive ? "إلغاء التفعيل" : "تفعيل"}
                                                     >
                                                         {user.isActive ? <FaToggleOn /> : <FaToggleOff />}
@@ -1195,7 +1195,7 @@ export default function AdminUserDashboard() {
                                                     </button>
                                                     <button
                                                         onClick={() => handleToggleStatus(user.id, user.isActive)}
-                                                        className="p-2 text-gray-500 hover:text-yellow-600 transition-colors"
+                                                        className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
                                                         title={user.isActive ? "إلغاء التفعيل" : "تفعيل"}
                                                     >
                                                         {user.isActive ? <FaToggleOn /> : <FaToggleOff />}
@@ -2040,7 +2040,7 @@ export default function AdminUserDashboard() {
                                         onClick={() => handleToggleStatus(selectedUser.id, selectedUser.isActive)}
                                         className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                                             selectedUser.isActive
-                                                ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                                 : 'bg-green-600 hover:bg-green-700 text-white'
                                         }`}
                                     >

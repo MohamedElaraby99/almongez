@@ -232,7 +232,7 @@ export default function WhatsAppServices() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1">
-                                                <FaStar className="text-yellow-400 text-sm" />
+                                                <FaStar className="text-blue-400 text-sm" />
                                                 <span className="text-sm text-gray-500 dark:text-gray-400">4.8</span>
                                             </div>
                                         </div>

@@ -45,7 +45,7 @@ export default function LessonCard({
                 <FaPlay className="text-white" />
               </div>
               {hasVideo(lesson) && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-full flex items-center justify-center">
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
                   <FaGem className="text-white text-xs" />
                 </div>
               )}

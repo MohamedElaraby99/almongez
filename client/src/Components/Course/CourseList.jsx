@@ -102,7 +102,7 @@ const CourseList = ({ courses, loading, pagination, onEditCourse, role, onRefres
               {/* Featured Badge Overlay */}
               {course.featured && (
                 <div className="absolute top-2 right-2 z-10">
-                  <span className="inline-flex items-center px-2 py-1 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full shadow-lg">
+                  <span className="inline-flex items-center px-2 py-1 bg-blue-400 text-blue-900 text-xs font-bold rounded-full shadow-lg">
                     <FaStar className="w-3 h-3 mr-1 fill-current" />
                     مميز
                   </span>
@@ -188,7 +188,7 @@ const CourseList = ({ courses, loading, pagination, onEditCourse, role, onRefres
               {/* Featured Badge */}
               {course.featured && (
                 <div className="mb-3">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                     <FaStar className="w-3 h-3 mr-1 fill-current" />
                     مميز
                   </span>
@@ -228,8 +228,8 @@ const CourseList = ({ courses, loading, pagination, onEditCourse, role, onRefres
                     onClick={() => handleToggleFeatured(course._id, course.featured)}
                     className={`p-2 rounded-lg transition-colors ${
                       course.featured 
-                        ? 'text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' 
-                        : 'text-gray-400 dark:text-gray-500 hover:text-yellow-600 dark:hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
+                        ? 'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20' 
+                        : 'text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'
                     }`}
                     title={course.featured ? 'إلغاء التمييز' : 'تمييز الدورة'}
                   >

@@ -150,7 +150,7 @@ export default function DeviceManagementDashboard() {
     const getBrowserIcon = (browser) => {
         switch (browser?.toLowerCase()) {
             case "chrome":
-                return <FaChrome className="text-yellow-500" />;
+                return <FaChrome className="text-blue-500" />;
             case "firefox":
                 return <FaFirefoxBrowser className="text-blue-500" />;
             case "edge":
@@ -240,11 +240,11 @@ export default function DeviceManagementDashboard() {
                     {activeTab === "overview" && (
                         <div className="space-y-6">
                                                          {/* Debug Information */}
-                             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
-                                 <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                 <h3 className="text-lg font-medium text-blue-800 dark:text-blue-200 mb-2">
                                      معلومات التصحيح
                                  </h3>
-                                 <div className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                                 <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
                                      <p>• إجمالي المستخدمين: {usersDevices.length}</p>
                                      <p>• إجمالي الأجهزة: {deviceStats.totalDevices}</p>
                                      <p>• الأجهزة النشطة: {deviceStats.activeDevices}</p>
@@ -494,8 +494,8 @@ export default function DeviceManagementDashboard() {
                                                                  <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 space-y-2">
                                      <p>يمكنك تغيير عدد الأجهزة المسموح بها لكل مستخدم. الحد الأقصى هو 10 أجهزة.</p>
                                      {newDeviceLimit < deviceStats.maxDevicesPerUser && (
-                                         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
-                                             <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+                                         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                                             <p className="text-blue-800 dark:text-blue-200 font-medium">
                                                  ⚠️ تحذير: عند تقليل الحد من {deviceStats.maxDevicesPerUser} إلى {newDeviceLimit}، سيتم إعادة تعيين جميع أجهزة المستخدمين الذين لديهم أكثر من {newDeviceLimit} أجهزة نشطة.
                                              </p>
                                          </div>

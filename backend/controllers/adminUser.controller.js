@@ -24,11 +24,12 @@ const getAllUsers = async (req, res, next) => {
             query.stage = stage;
         }
 
-        // Search by name or email
+        // Search by name, email, or phone number
         if (search) {
             query.$or = [
                 { fullName: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } }
+                { email: { $regex: search, $options: 'i' } },
+                { phoneNumber: { $regex: search, $options: 'i' } }
             ];
         }
 
@@ -131,8 +132,8 @@ const createUser = async (req, res, next) => {
         } = req.body;
 
         // Validate required fields
-        if (!fullName || !username || !email || !password || !role) {
-            return next(new AppError("Full name, username, email, password, and role are required", 400));
+        if (!fullName || !username || !password || !role) {
+            return next(new AppError("Full name, username, password, and role are required", 400));
         }
 
         // Validate role
@@ -153,24 +154,46 @@ const createUser = async (req, res, next) => {
             }
         }
 
-        // For USER role, require additional fields (fatherPhoneNumber optional)
+        // Role-specific field validation
         if (role === 'USER') {
+            // For USER role: phone number is required, email is optional
             if (!phoneNumber || !governorate || !stage || !age) {
                 return next(new AppError("Phone number, governorate, stage, and age are required for regular users", 400));
             }
+        } else if (role === 'ADMIN') {
+            // For ADMIN role: email is required
+            if (!email) {
+                return next(new AppError("Email is required for admin users", 400));
+            }
         }
 
-        // Check if user already exists
-        const existingUser = await userModel.findOne({ 
-            $or: [{ email }, { username }] 
-        });
-
-        if (existingUser) {
-            if (existingUser.email === email) {
-                return next(new AppError("Email already exists", 400));
+        // Check if user already exists based on role
+        let existingUser;
+        if (role === 'USER') {
+            // For USER role: check phone number and username
+            existingUser = await userModel.findOne({ 
+                $or: [{ phoneNumber }, { username }] 
+            });
+            if (existingUser) {
+                if (existingUser.phoneNumber === phoneNumber) {
+                    return next(new AppError("Phone number already exists", 400));
+                }
+                if (existingUser.username === username) {
+                    return next(new AppError("Username already exists", 400));
+                }
             }
-            if (existingUser.username === username) {
-                return next(new AppError("Username already exists", 400));
+        } else {
+            // For ADMIN role: check email and username
+            existingUser = await userModel.findOne({ 
+                $or: [{ email }, { username }] 
+            });
+            if (existingUser) {
+                if (existingUser.email === email) {
+                    return next(new AppError("Email already exists", 400));
+                }
+                if (existingUser.username === username) {
+                    return next(new AppError("Username already exists", 400));
+                }
             }
         }
 
@@ -178,23 +201,25 @@ const createUser = async (req, res, next) => {
         const userData = {
             fullName,
             username: username.toLowerCase(),
-            email: email.toLowerCase(),
             password,
             role,
             isActive: true,
             avatar: {
-                public_id: email,
+                public_id: role === 'USER' ? phoneNumber : email,
                 secure_url: "",
             }
         };
 
-        // Add optional fields for USER role
+        // Add role-specific fields
         if (role === 'USER') {
             userData.phoneNumber = phoneNumber;
+            if (email) userData.email = email; // Optional email for USER
             if (fatherPhoneNumber) userData.fatherPhoneNumber = fatherPhoneNumber;
             userData.governorate = governorate;
             userData.stage = stage;
             userData.age = parseInt(age);
+        } else if (role === 'ADMIN') {
+            userData.email = email;
         }
 
         // Create user

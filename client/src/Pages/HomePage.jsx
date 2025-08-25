@@ -169,7 +169,7 @@ export default function HomePage() {
   const stats = [
     { icon: FaUsers, number: "10K+", label: "طالب مسجل", color: "text-blue-600" },
     { icon: FaGraduationCap, number: "100+", label: "مادة متاحة", color: "text-green-600" },
-    { icon: FaStar, number: "4.9", label: "متوسط التقييم", color: "text-yellow-600" },
+    { icon: FaStar, number: "4.9", label: "متوسط التقييم", color: "text-blue-600" },
     { icon: FaAward, number: "50+", label: "مدرس مدرس", color: "text-blue-600" }
   ];
 
@@ -231,8 +231,8 @@ export default function HomePage() {
       dir="rtl"
       style={{ transitionDelay: '400ms' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Yellow Strip */}
-          <div className="w-full h-2 bg-yellow-400 mb-8"></div>
+          {/* blue Strip */}
+          <div className="w-full h-2 bg-blue-400 mb-8"></div>
           
           {/* Section Header */}
           <div className={`text-center mb-16 transition-all duration-700 ease-out ${
@@ -597,7 +597,7 @@ export default function HomePage() {
                     <div className="flex gap-2">
                       <Link
                         to={`/courses/${course._id}`}
-                        className="flex-1 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:from-blue-600 hover:via-blue-700 hover:to-blue-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                       >
                         <FaEye />
                         <span>عرض التفاصيل</span>
@@ -630,7 +630,7 @@ export default function HomePage() {
             <div className="text-center mt-12">
               <Link
                 to="/courses"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:from-blue-600 hover:via-blue-700 hover:to-blue-600 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
                 <span>عرض جميع المواد  </span>
                 <FaArrowRight />
@@ -770,7 +770,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className={`py-20 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 transition-all duration-700 ease-out ${
+      <section className={`py-20 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 transition-all duration-700 ease-out ${
         heroLoaded 
           ? 'opacity-100 translate-y-0' 
           : 'opacity-0 translate-y-8'
@@ -797,13 +797,13 @@ export default function HomePage() {
           }`}
           style={{ transitionDelay: '4000ms' }}>
             <Link to="/signup">
-              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-yellow-500 hover:from-blue-600 hover:via-blue-700 hover:to-yellow-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:from-blue-600 hover:via-blue-700 hover:to-blue-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                 ابدأ مجاناً
               </button>
             </Link>
             
             <Link to="/qa">
-              <button className="px-8 py-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+              <button className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
                 <FaQuestionCircle className="w-5 h-5" />
                 اطرح سؤالاً
               </button>
@@ -902,7 +902,7 @@ export default function HomePage() {
               {/* Download Stats */}
               <div className="flex items-center space-x-8 pt-6 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center space-x-2">
-                  <FaStar className="w-4 h-4 text-yellow-500 ml-1" />
+                  <FaStar className="w-4 h-4 text-blue-500 ml-1" />
                   <span>4.8 تقييم</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -995,7 +995,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Floating Elements */}
-                <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-yellow-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                   <FaDownload className="text-white text-2xl" />
                 </div>
                 
@@ -1130,7 +1130,7 @@ export default function HomePage() {
 
             {/* Additional Info */}
             <div className="mt-12 text-center">
-              <div className="bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 rounded-2xl p-8">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl p-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                   لماذا تختار منصتنا؟
                 </h3>

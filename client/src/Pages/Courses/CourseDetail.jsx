@@ -578,7 +578,7 @@ export default function CourseDetail() {
                       <div className="text-sm text-gray-600 dark:text-gray-400">وحدة</div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <div className="text-2xl font-bold text-yellow-600 mb-1">
+                      <div className="text-2xl font-bold text-blue-600 mb-1">
                         {currentCourse.directLessons?.length || 0}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">مقدمة</div>
@@ -1031,7 +1031,7 @@ export default function CourseDetail() {
                        {previewItem.exams.slice(0, 2).map((exam, index) => (
                          <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                            <div className="flex items-center gap-2">
-                             <FaGraduationCap className="text-yellow-600" />
+                             <FaGraduationCap className="text-blue-600" />
                              <span className="text-sm text-gray-700 dark:text-gray-300">{exam.title}</span>
                            </div>
                          </div>

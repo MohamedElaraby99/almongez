@@ -339,7 +339,7 @@ const LiveMeetingDashboard = () => {
               {/* Data Loading Status */}
               <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 {!instructors || !subjects || !stages ? (
-                  <span className="text-yellow-600">🔄 جاري تحميل البيانات الأساسية...</span>
+                  <span className="text-blue-600">🔄 جاري تحميل البيانات الأساسية...</span>
                 ) : (
                   <span className="text-green-600">✅ البيانات جاهزة</span>
                 )}
@@ -370,8 +370,8 @@ const LiveMeetingDashboard = () => {
             
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
-                  <FaClock className="text-2xl text-yellow-600 dark:text-yellow-400" />
+                <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                  <FaClock className="text-2xl text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="mr-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">القادمة</p>

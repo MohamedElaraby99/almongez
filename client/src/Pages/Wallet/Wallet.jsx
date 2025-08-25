@@ -398,8 +398,8 @@ export default function Wallet() {
                                                     </div>
                                                 ))}
                                             </div>
-                                            <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded">
-                                                <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                                            <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded">
+                                                <p className="text-xs text-blue-800 dark:text-blue-200">
                                                     <strong>ساعات العمل:</strong> الدعم متاح على مدار 24/7
                                                 </p>
                                             </div>
@@ -435,7 +435,7 @@ export default function Wallet() {
                                                     ) : codeValidation.loading ? (
                                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
                                                     ) : (
-                                                        <FaExclamationTriangle className="text-yellow-500 w-5 h-5" />
+                                                        <FaExclamationTriangle className="text-blue-500 w-5 h-5" />
                                                     )}
                                                 </div>
                                             )}
@@ -539,7 +539,7 @@ export default function Wallet() {
                                                         transaction.status === 'completed'
                                                             ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                                                             : transaction.status === 'pending'
-                                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
                                                             : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                                                     }`}>
                                                         {getStatusText(transaction.status)}

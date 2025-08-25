@@ -164,7 +164,7 @@ export default function Contact() {
 
           {/* Additional Info */}
           <div className="mt-16 text-center">
-            <div className="bg-gradient-to-r from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 rounded-2xl p-8">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl p-8">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                 لماذا تختار منصتنا؟
               </h3>

@@ -48,7 +48,7 @@ export default function Instructors() {
         <FaStar
           key={i}
           className={`w-4 h-4 ${
-            i <= rating ? 'text-yellow-400' : 'text-gray-300'
+            i <= rating ? 'text-blue-400' : 'text-gray-300'
           }`}
         />
       );
@@ -136,7 +136,7 @@ export default function Instructors() {
                         </div>
                       </div>
                       {instructor.featured && (
-                        <span className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-semibold">
+                        <span className="bg-blue-400 text-blue-900 px-2 py-1 rounded-full text-xs font-semibold">
                           مميز
                         </span>
                       )}

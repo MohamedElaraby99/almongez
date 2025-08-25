@@ -69,7 +69,7 @@ export default function TermsOfService() {
                     </p>
                   </div>
                   <div className="flex items-start">
-                    <FaExclamationTriangle className="text-yellow-500 mt-1 ml-3 flex-shrink-0" />
+                    <FaExclamationTriangle className="text-blue-500 mt-1 ml-3 flex-shrink-0" />
                     <p className="text-gray-700 dark:text-gray-300">
                       أنت مسؤول عن جميع الأنشطة التي تحدث تحت حسابك.
                     </p>
@@ -119,9 +119,9 @@ export default function TermsOfService() {
                       </ul>
                     </div>
                     
-                    <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                      <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">ما يعتبر انتهاكاً:</h4>
-                      <ul className="space-y-1 text-yellow-700 dark:text-yellow-300 text-sm">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">ما يعتبر انتهاكاً:</h4>
+                      <ul className="space-y-1 text-blue-700 dark:text-blue-300 text-sm">
                         <li>• تسجيل شاشة الفيديوهات التعليمية</li>
                         <li>• مشاركة روابط المحتوى مع أشخاص آخرين</li>
                         <li>• نشر المحتوى على وسائل التواصل الاجتماعي</li>

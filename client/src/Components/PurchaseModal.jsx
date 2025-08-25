@@ -193,7 +193,7 @@ const PurchaseModal = ({
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm text-gray-600 dark:text-gray-400">سعر الدرس</span>
               <div className="flex items-center gap-2">
-                <FaCoins className="text-yellow-500" />
+                <FaCoins className="text-blue-500" />
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                   {price} نقطة
                 </span>
@@ -280,7 +280,7 @@ const PurchaseModal = ({
           {/* Benefits */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
             <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <FaStar className="text-yellow-500" />
+              <FaStar className="text-blue-500" />
               ما ستحصل عليه
             </h4>
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">

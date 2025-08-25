@@ -47,7 +47,7 @@ const ExamHistory = () => {
   const getScoreColor = (score) => {
     if (score >= 90) return 'text-green-600';
     if (score >= 80) return 'text-blue-600';
-    if (score >= 70) return 'text-yellow-600';
+    if (score >= 70) return 'text-blue-600';
     return 'text-red-600';
   };
 
@@ -137,7 +137,7 @@ const ExamHistory = () => {
             
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-lg">
               <div className="flex items-center gap-2 sm:gap-3">
-                <FaStar className="text-lg sm:text-2xl text-yellow-500" />
+                <FaStar className="text-lg sm:text-2xl text-blue-500" />
                 <div>
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Average Score</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -239,7 +239,7 @@ const ExamHistory = () => {
                         <span>Wrong: {result.wrongAnswers}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <FaStar className="text-yellow-500" />
+                        <FaStar className="text-blue-500" />
                         <span>Passing Score: {result.passingScore}%</span>
                       </div>
                       <div className="flex items-center gap-2">

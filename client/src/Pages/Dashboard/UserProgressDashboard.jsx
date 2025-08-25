@@ -135,7 +135,7 @@ const UserProgressDashboard = () => {
   const getProgressColor = (percentage) => {
     if (percentage >= 80) return 'bg-green-500';
     if (percentage >= 60) return 'bg-blue-500';
-    if (percentage >= 40) return 'bg-yellow-500';
+    if (percentage >= 40) return 'bg-blue-500';
     return 'bg-red-500';
   };
 
@@ -576,7 +576,7 @@ const UserProgressDashboard = () => {
                         </div>
                         <div className="text-left">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className={`w-3 h-3 rounded-full ${activity.isCompleted ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                            <div className={`w-3 h-3 rounded-full ${activity.isCompleted ? 'bg-green-500' : 'bg-blue-500'}`}></div>
                             <span className="text-sm font-medium">
                               {activity.progress}%
                             </span>
