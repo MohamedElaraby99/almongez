@@ -59,7 +59,7 @@ const GradeDashboard = () => {
 
   // Load grades and subjects on component mount
   useEffect(() => {
-    if (role === 'ADMIN') {
+    if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
       dispatch(getAllGrades());
       dispatch(getGradesWithSubjectsCount());
       dispatch(getAllSubjects());
@@ -220,7 +220,7 @@ const GradeDashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
-  if (role !== 'ADMIN') {
+  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">

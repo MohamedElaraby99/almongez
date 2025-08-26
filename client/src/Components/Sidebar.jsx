@@ -244,16 +244,6 @@ export default function Sidebar({ hideBar = false }) {
                     </li>
                     <li>
                       <Link 
-                        to="/admin/exam-results" 
-                        className="flex gap-3 items-center text-xs text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-1.5 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-                        onClick={closeSidebar}
-                      >
-                        <FaClipboardCheck size={14} className="text-gray-500 dark:text-slate-100" />
-                        نتائج الامتحانات
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
                         to="/about" 
                         className="flex gap-3 items-center text-xs text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-1.5 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={closeSidebar}

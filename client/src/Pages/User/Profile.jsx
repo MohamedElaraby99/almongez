@@ -58,7 +58,7 @@ export default function Profile() {
     formData.append("phoneNumber", userInput.phoneNumber);
     
     // Only append user-specific fields for regular users
-    if (userData?.role !== 'ADMIN') {
+    if (userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN') {
       formData.append("fatherPhoneNumber", userInput.fatherPhoneNumber);
       formData.append("governorate", userInput.governorate);
       formData.append("age", userInput.age);
@@ -133,7 +133,7 @@ export default function Profile() {
         userInput.avatar;
       
       // Only check user-specific fields for regular users
-      if (userData?.role !== 'ADMIN') {
+      if (userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN') {
         hasChanges = hasChanges ||
           userInput.fatherPhoneNumber !== userData?.fatherPhoneNumber ||
           userInput.governorate !== userData?.governorate ||
@@ -144,10 +144,10 @@ export default function Profile() {
         nameChanged: userInput.name !== userData?.fullName,
         usernameChanged: userInput.username !== userData?.username,
         phoneChanged: userInput.phoneNumber !== userData?.phoneNumber,
-        fatherPhoneChanged: userData?.role !== 'ADMIN' ? userInput.fatherPhoneNumber !== userData?.fatherPhoneNumber : false,
-        governorateChanged: userData?.role !== 'ADMIN' ? userInput.governorate !== userData?.governorate : false,
+        fatherPhoneChanged: userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN' ? userInput.fatherPhoneNumber !== userData?.fatherPhoneNumber : false,
+        governorateChanged: userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN' ? userInput.governorate !== userData?.governorate : false,
 
-        ageChanged: userData?.role !== 'ADMIN' ? userInput.age !== userData?.age : false,
+        ageChanged: userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN' ? userInput.age !== userData?.age : false,
         avatarChanged: !!userInput.avatar,
         userRole: userData?.role,
         hasChanges
@@ -355,7 +355,7 @@ export default function Profile() {
               </div>
 
               {/* User-specific fields - only show for regular users */}
-              {userData?.role !== 'ADMIN' && (
+              {userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN' && (
                 <>
                   {/* Father's Phone Number */}
                   <div className="space-y-2">

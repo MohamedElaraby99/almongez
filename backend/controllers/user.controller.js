@@ -222,7 +222,7 @@ const register = async (req, res, next) => {
         const token = await user.generateJWTToken();
 
         // Populate stage for regular users
-        if (user.role !== 'ADMIN' && user.stage) {
+        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && user.stage) {
             await user.populate('stage', 'name');
         }
 
@@ -268,7 +268,7 @@ const login = async (req, res, next) => {
         console.log('Device info provided:', !!deviceInfo);
 
         // Skip device check for admin users
-        if (user.role !== 'ADMIN') {
+        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
             console.log('=== DEVICE REGISTRATION FOR NON-ADMIN USER ===');
             console.log('User role:', user.role);
             console.log('Device info received:', deviceInfo);
@@ -359,7 +359,7 @@ const login = async (req, res, next) => {
         user.password = undefined;
 
         // Populate stage for regular users
-        if (user.role !== 'ADMIN' && user.stage) {
+        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && user.stage) {
             await user.populate('stage', 'name');
         }
 

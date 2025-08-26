@@ -298,7 +298,7 @@ const LiveMeetingDashboard = () => {
       }
       
       // Filter by role (show only students if enabled)
-      if (showStudentsOnly && user.role === 'ADMIN') {
+      if (showStudentsOnly && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')) {
         return false;
       }
       

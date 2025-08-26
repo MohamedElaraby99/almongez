@@ -106,7 +106,7 @@ export default function CourseDetail() {
 
   // Fetch wallet balance only when user is logged in
   useEffect(() => {
-    if (user && isLoggedIn && user.role !== 'ADMIN') {
+    if (user && isLoggedIn && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
       dispatch(getWalletBalance());
     }
   }, [dispatch, user, isLoggedIn]);
@@ -204,7 +204,7 @@ export default function CourseDetail() {
 
   const isItemPurchased = (purchaseType, itemId) => {
     // Admin users have access to all content
-    if (user?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') {
       return true;
     }
     
@@ -231,7 +231,7 @@ export default function CourseDetail() {
 
   // Block access if code-based access expired (only for code access, not purchased)
   useEffect(() => {
-    if (!user || user.role === 'ADMIN') return;
+    if (!user || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') return;
     if (!currentCourse) return;
     
     // Check if access has expired
@@ -266,7 +266,7 @@ export default function CourseDetail() {
     }
     
     // Admin users have access to all content, no need to purchase
-    if (user.role === 'ADMIN') {
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
       setAlertMessage('أنت مدير النظام - لديك صلاحية الوصول لجميع المحتوى');
       setShowSuccessAlert(true);
       return;
@@ -603,7 +603,7 @@ export default function CourseDetail() {
                 <div className="lg:col-span-1">
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 sticky top-6">
                                                                {/* Wallet Balance */}
-                      {user && isLoggedIn && user.role !== 'ADMIN' && (
+                      {user && isLoggedIn && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && (
                         <div className="text-center mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                           <div className="flex items-center justify-center gap-2 mb-2">
                             <FaWallet className="text-green-600" />
@@ -638,7 +638,7 @@ export default function CourseDetail() {
                     </div>
 
                                          {/* Redeem Access Code */}
-                     {user && isLoggedIn && user.role !== 'ADMIN' && (
+                     {user && isLoggedIn && user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && (
                        <div className="space-y-3">
                          {/* Show expired access warning */}
                          {courseAccessState?.source === 'code' && !courseAccessState?.hasAccess && courseAccessState?.accessEndAt && (

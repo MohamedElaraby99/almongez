@@ -187,7 +187,7 @@ export default function QADetail() {
                 >
                   <FaShare />
                 </button>
-                {role === 'ADMIN' && (
+                {(role === 'ADMIN' || role === 'SUPER_ADMIN') && (
                   <>
                     <Link
                       to={`/qa/edit/${currentQA._id}`}

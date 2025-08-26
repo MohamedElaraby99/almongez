@@ -117,7 +117,7 @@ export default function CourseDashboard() {
                 </h2>
               </div>
               
-              {role === 'ADMIN' && (
+              {(role === 'ADMIN' || role === 'SUPER_ADMIN') && (
                 <button
                   onClick={handleCreateCourse}
                   className="bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"

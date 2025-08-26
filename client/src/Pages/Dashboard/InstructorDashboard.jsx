@@ -178,7 +178,7 @@ const InstructorDashboard = () => {
     return stars;
   };
 
-  if (role !== 'ADMIN') {
+  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">

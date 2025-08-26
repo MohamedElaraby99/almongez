@@ -214,7 +214,7 @@ const CourseList = ({ courses, loading, pagination, onEditCourse, role, onRefres
                 >
                   <FaEdit className="text-sm" />
                 </button>
-                {role === 'ADMIN' && (
+                {(role === 'ADMIN' || role === 'SUPER_ADMIN') && (
                   <button
                     onClick={() => handleDeleteCourse(course._id)}
                     className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -223,7 +223,7 @@ const CourseList = ({ courses, loading, pagination, onEditCourse, role, onRefres
                     <FaTrash className="text-sm" />
                   </button>
                 )}
-                {role === 'ADMIN' && (
+                {(role === 'ADMIN' || role === 'SUPER_ADMIN') && (
                   <button
                     onClick={() => handleToggleFeatured(course._id, course.featured)}
                     className={`p-2 rounded-lg transition-colors ${

@@ -86,7 +86,7 @@ export default function AnalyticsDashboard() {
   
   // Load data on component mount
   useEffect(() => {
-    if (userData?.role === 'ADMIN') {
+    if (userData?.role === 'ADMIN' || userData?.role === 'SUPER_ADMIN') {
       fetchExamAnalytics();
       fetchVideoAnalytics();
     }
@@ -149,7 +149,7 @@ export default function AnalyticsDashboard() {
     }
   };
 
-  if (userData?.role !== 'ADMIN') {
+  if (userData?.role !== 'ADMIN' && userData?.role !== 'SUPER_ADMIN') {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">

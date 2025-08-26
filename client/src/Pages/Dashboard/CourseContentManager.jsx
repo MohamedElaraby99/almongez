@@ -93,6 +93,7 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
   const [videos, setVideos] = useState(lesson?.videos || []);
   const [pdfs, setPdfs] = useState(lesson?.pdfs || []);
   const [exams, setExams] = useState(lesson?.exams || []);
+  const [essayExams, setEssayExams] = useState([]);
   const [trainings, setTrainings] = useState(lesson?.trainings || []);
   const [newVideo, setNewVideo] = useState({ url: '', title: '', description: '', publishDate: '' });
   const [newPdf, setNewPdf] = useState({ url: '', title: '', fileName: '', publishDate: '' });
@@ -102,6 +103,16 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
     timeLimit: 30,
     openDate: '',
     closeDate: '',
+    questions: []
+  });
+  const [newEssayExam, setNewEssayExam] = useState({
+    title: '',
+    description: '',
+    timeLimit: 60,
+    openDate: '',
+    closeDate: '',
+    allowLateSubmission: false,
+    lateSubmissionPenalty: 10,
     questions: []
   });
   const [newTraining, setNewTraining] = useState({
@@ -125,18 +136,31 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
     image: '',
     numberOfOptions: 4
   });
+  const [newEssayQuestion, setNewEssayQuestion] = useState({
+    question: '',
+    description: '',
+    maxGrade: 100,
+    allowFileUpload: false,
+    allowedFileTypes: ['pdf', 'doc', 'docx'],
+    maxFileSize: 10,
+    image: ''
+  });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editVideoIndex, setEditVideoIndex] = useState(null);
   const [editPdfIndex, setEditPdfIndex] = useState(null);
   const [editExamIndex, setEditExamIndex] = useState(null);
+  const [editEssayExamIndex, setEditEssayExamIndex] = useState(null);
   const [editTrainingIndex, setEditTrainingIndex] = useState(null);
   // Exam question edit
   const [editExamQuestionIndex, setEditExamQuestionIndex] = useState(null);
+  // Essay exam question edit
+  const [editEssayQuestionIndex, setEditEssayQuestionIndex] = useState(null);
   // Training question edit
   const [editTrainingQuestionIndex, setEditTrainingQuestionIndex] = useState(null);
   // Track expanded exams and trainings
   const [expandedExams, setExpandedExams] = useState(new Set());
+  const [expandedEssayExams, setExpandedEssayExams] = useState(new Set());
   const [expandedTrainings, setExpandedTrainings] = useState(new Set());
 
   // PDF file upload handler
@@ -312,6 +336,168 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
       ...training,
       questions: training.questions.filter((_, i) => i !== idx)
     }));
+  };
+
+  // Essay exam handlers
+  const handleAddEssayQuestion = () => {
+    if (!newEssayQuestion.question.trim()) return;
+    setNewEssayExam(exam => ({
+      ...exam,
+      questions: [...exam.questions, newEssayQuestion]
+    }));
+    setNewEssayQuestion({
+      question: '',
+      description: '',
+      maxGrade: 100,
+      allowFileUpload: false,
+      allowedFileTypes: ['pdf', 'doc', 'docx'],
+      maxFileSize: 10,
+      image: ''
+    });
+  };
+
+  const handleRemoveEssayQuestion = (idx) => {
+    setNewEssayExam(exam => ({
+      ...exam,
+      questions: exam.questions.filter((_, i) => i !== idx)
+    }));
+  };
+
+  const handleAddEssayExam = async () => {
+    if (!newEssayExam.title.trim() || newEssayExam.questions.length === 0) {
+      toast.error('يرجى إدخال عنوان الامتحان وإضافة أسئلة على الأقل');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const response = await axiosInstance.post('/essay-exams/create', {
+        courseId,
+        lessonId,
+        unitId,
+        ...newEssayExam
+      });
+      
+      if (response.data.success) {
+        toast.success('تم إنشاء الامتحان المقالي بنجاح');
+        setEssayExams(prev => [...prev, response.data.data]);
+        setNewEssayExam({
+          title: '',
+          description: '',
+          timeLimit: 60,
+          openDate: '',
+          closeDate: '',
+          allowLateSubmission: false,
+          lateSubmissionPenalty: 10,
+          questions: []
+        });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'فشل في إنشاء الامتحان المقالي');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemoveEssayExam = async (examId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الامتحان المقالي؟')) return;
+    
+    setSaving(true);
+    try {
+      const response = await axiosInstance.delete(`/essay-exams/${examId}`);
+      if (response.data.success) {
+        toast.success('تم حذف الامتحان المقالي بنجاح');
+        setEssayExams(prev => prev.filter(exam => exam._id !== examId));
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'فشل في حذف الامتحان المقالي');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Edit essay exam handlers
+  const handleEditEssayExam = (idx) => {
+    setEditEssayExamIndex(idx);
+    // Deep copy to avoid mutating list while editing
+    const selected = essayExams[idx];
+    setNewEssayExam({
+      title: selected.title || '',
+      description: selected.description || '',
+      timeLimit: selected.timeLimit || 60,
+      openDate: selected.openDate ? new Date(selected.openDate).toISOString().slice(0, 16) : '',
+      closeDate: selected.closeDate ? new Date(selected.closeDate).toISOString().slice(0, 16) : '',
+      allowLateSubmission: !!selected.allowLateSubmission,
+      lateSubmissionPenalty: selected.lateSubmissionPenalty ?? 10,
+      questions: (selected.questions || []).map(q => ({
+        question: q.question || '',
+        description: q.description || '',
+        maxGrade: q.maxGrade ?? 100,
+        allowFileUpload: !!q.allowFileUpload,
+        allowedFileTypes: Array.isArray(q.allowedFileTypes) ? [...q.allowedFileTypes] : ['pdf','doc','docx'],
+        maxFileSize: q.maxFileSize ?? 10,
+        image: q.image || ''
+      }))
+    });
+  };
+
+  const handleSaveEditEssayExam = async () => {
+    if (!newEssayExam.title.trim() || newEssayExam.questions.length === 0) {
+      toast.error('يرجى إدخال عنوان الامتحان وإضافة أسئلة على الأقل');
+      return;
+    }
+    const target = essayExams[editEssayExamIndex];
+    if (!target?._id) return;
+
+    setSaving(true);
+    try {
+      const payload = {
+        title: newEssayExam.title,
+        description: newEssayExam.description,
+        timeLimit: newEssayExam.timeLimit,
+        openDate: newEssayExam.openDate ? new Date(newEssayExam.openDate).toISOString() : null,
+        closeDate: newEssayExam.closeDate ? new Date(newEssayExam.closeDate).toISOString() : null,
+        allowLateSubmission: newEssayExam.allowLateSubmission,
+        lateSubmissionPenalty: newEssayExam.lateSubmissionPenalty,
+        questions: newEssayExam.questions
+      };
+      const res = await axiosInstance.put(`/essay-exams/${target._id}`, payload);
+      if (res.data?.success) {
+        toast.success('تم تحديث الامتحان المقالي بنجاح');
+        // Update local list
+        setEssayExams(prev => prev.map((ex, i) => i === editEssayExamIndex ? res.data.data : ex));
+        // Reset form
+        setEditEssayExamIndex(null);
+        setNewEssayExam({
+          title: '',
+          description: '',
+          timeLimit: 60,
+          openDate: '',
+          closeDate: '',
+          allowLateSubmission: false,
+          lateSubmissionPenalty: 10,
+          questions: []
+        });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'فشل في تحديث الامتحان المقالي');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEditEssayExam = () => {
+    setEditEssayExamIndex(null);
+    setNewEssayExam({
+      title: '',
+      description: '',
+      timeLimit: 60,
+      openDate: '',
+      closeDate: '',
+      allowLateSubmission: false,
+      lateSubmissionPenalty: 10,
+      questions: []
+    });
   };
 
   const handleAddExam = () => {
@@ -540,6 +726,24 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
     }
   }, [lesson]);
 
+  // Load essay exams for the lesson
+  useEffect(() => {
+    const loadEssayExams = async () => {
+      if (!courseId || !lessonId) return;
+      
+      try {
+        const response = await axiosInstance.get(`/essay-exams/course/${courseId}/lesson/${lessonId}?${unitId ? `unitId=${unitId}` : ''}`);
+        if (response.data.success) {
+          setEssayExams(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error loading essay exams:', error);
+      }
+    };
+
+    loadEssayExams();
+  }, [courseId, lessonId, unitId]);
+
   // Monitor exams state changes
   useEffect(() => {
     console.log('=== EXAMS STATE CHANGED ===');
@@ -703,6 +907,7 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
     videos: false,
     pdfs: false,
     exams: false,
+    'essay-exams': false,
     trainings: false
   });
 
@@ -716,6 +921,18 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
   // Toggle expanded state for exams and trainings
   const toggleExamExpanded = (examIndex) => {
     setExpandedExams(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(examIndex)) {
+        newSet.delete(examIndex);
+      } else {
+        newSet.add(examIndex);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleEssayExamExpanded = (examIndex) => {
+    setExpandedEssayExams(prev => {
       const newSet = new Set(prev);
       if (newSet.has(examIndex)) {
         newSet.delete(examIndex);
@@ -758,6 +975,7 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
           <button className={`px-3 py-2 rounded-t ${tab === 'videos' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setTab('videos')}>فيديوهات</button>
           <button className={`px-3 py-2 rounded-t ${tab === 'pdfs' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setTab('pdfs')}>PDF</button>
           <button className={`px-3 py-2 rounded-t ${tab === 'exams' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setTab('exams')}>امتحانات</button>
+          <button className={`px-3 py-2 rounded-t ${tab === 'essay-exams' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setTab('essay-exams')}>امتحانات مقالية</button>
           <button className={`px-3 py-2 rounded-t ${tab === 'trainings' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setTab('trainings')}>تدريبات</button>
         </div>
         {tab === 'videos' && (
@@ -1134,6 +1352,232 @@ const LessonContentModal = ({ courseId, unitId, lessonId, onClose }) => {
                   <button type="button" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50" onClick={handleSaveExams} disabled={saving}>
                     {saving ? 'جاري الحفظ...' : 'حفظ الامتحانات'}
                   </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        {tab === 'essay-exams' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="font-semibold text-gray-900 dark:text-white text-right mb-4">إضافة امتحان مقالي جديد</div>
+              <button 
+                onClick={() => toggleSection('essay-exams')}
+                className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+              >
+                {openSections['essay-exams'] ? 'إخفاء' : 'إظهار'}
+                <span>{openSections['essay-exams'] ? '▼' : '▶'}</span>
+              </button>
+            </div>
+            {openSections['essay-exams'] && (
+              <>
+                {/* Essay Exam Details */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-4">
+                  <h3 className="font-medium text-gray-900 dark:text-white text-right">تفاصيل الامتحان المقالي</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" className="p-2 border rounded text-right" placeholder="عنوان الامتحان *" value={newEssayExam.title} onChange={e => setNewEssayExam(exam => ({ ...exam, title: e.target.value }))} />
+                    <input type="text" className="p-2 border rounded text-right" placeholder="وصف الامتحان (اختياري)" value={newEssayExam.description} onChange={e => setNewEssayExam(exam => ({ ...exam, description: e.target.value }))} />
+                    <div className="flex items-center gap-2">
+                      <input type="number" className="p-2 border rounded flex-1 text-right" placeholder="المدة بالدقائق" min="1" max="300" value={newEssayExam.timeLimit} onChange={e => setNewEssayExam(exam => ({ ...exam, timeLimit: parseInt(e.target.value) || 60 }))} />
+                      <span className="text-sm text-gray-600">دقيقة</span>
+                    </div>
+                    <input type="datetime-local" className="p-2 border rounded text-right" placeholder="تاريخ ووقت الفتح" value={newEssayExam.openDate} onChange={e => setNewEssayExam(exam => ({ ...exam, openDate: e.target.value }))} />
+                    <input type="datetime-local" className="p-2 border rounded text-right" placeholder="تاريخ ووقت الإغلاق" value={newEssayExam.closeDate} onChange={e => setNewEssayExam(exam => ({ ...exam, closeDate: e.target.value }))} />
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="allowLateSubmission" checked={newEssayExam.allowLateSubmission} onChange={e => setNewEssayExam(exam => ({ ...exam, allowLateSubmission: e.target.checked }))} />
+                      <label htmlFor="allowLateSubmission" className="text-sm text-gray-700 dark:text-gray-300">السماح بالتسليم المتأخر</label>
+                    </div>
+                    {newEssayExam.allowLateSubmission && (
+                      <div className="flex items-center gap-2">
+                        <input type="number" className="p-2 border rounded flex-1 text-right" placeholder="خصم النسبة المئوية" min="0" max="100" value={newEssayExam.lateSubmissionPenalty} onChange={e => setNewEssayExam(exam => ({ ...exam, lateSubmissionPenalty: parseInt(e.target.value) || 10 }))} />
+                        <span className="text-sm text-gray-600">%</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Add Essay Question */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-4">
+                  <h3 className="font-medium text-gray-900 dark:text-white text-right">إضافة سؤال مقالي جديد</h3>
+                  <textarea className="w-full p-2 border rounded text-right" placeholder="نص السؤال *" value={newEssayQuestion.question} onChange={e => setNewEssayQuestion(q => ({ ...q, question: e.target.value }))} rows="3" />
+                  <textarea className="w-full p-2 border rounded text-right" placeholder="وصف السؤال (اختياري)" value={newEssayQuestion.description} onChange={e => setNewEssayQuestion(q => ({ ...q, description: e.target.value }))} rows="2" />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <input type="number" className="p-2 border rounded flex-1 text-right" placeholder="الدرجة القصوى" min="1" max="100" value={newEssayQuestion.maxGrade} onChange={e => setNewEssayQuestion(q => ({ ...q, maxGrade: parseInt(e.target.value) || 100 }))} />
+                      <span className="text-sm text-gray-600">درجة</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="number" className="p-2 border rounded flex-1 text-right" placeholder="الحد الأقصى لحجم الملف" min="1" max="50" value={newEssayQuestion.maxFileSize} onChange={e => setNewEssayQuestion(q => ({ ...q, maxFileSize: parseInt(e.target.value) || 10 }))} />
+                      <span className="text-sm text-gray-600">ميجابايت</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="allowFileUpload" checked={newEssayQuestion.allowFileUpload} onChange={e => setNewEssayQuestion(q => ({ ...q, allowFileUpload: e.target.checked }))} />
+                    <label htmlFor="allowFileUpload" className="text-sm text-gray-700 dark:text-gray-300">السماح برفع ملف</label>
+                  </div>
+
+                  {newEssayQuestion.allowFileUpload && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-right">أنواع الملفات المسموحة:</label>
+                      <div className="flex flex-wrap gap-2 text-right">
+                        {['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'].map(type => (
+                          <label key={type} className="flex items-center gap-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={newEssayQuestion.allowedFileTypes.includes(type)}
+                              onChange={(e) => {
+                                const newTypes = e.target.checked
+                                  ? [...newEssayQuestion.allowedFileTypes, type]
+                                  : newEssayQuestion.allowedFileTypes.filter(t => t !== type);
+                                setNewEssayQuestion(q => ({ ...q, allowedFileTypes: newTypes }));
+                              }}
+                            />
+                            <span className="text-sm">{type.toUpperCase()}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Question Image */}
+                  <div className="flex items-center gap-2">
+                    <input type="file" accept="image/*" onChange={handleQuestionImageChange} disabled={uploading} />
+                    {uploading && <span className="text-blue-600 text-xs text-right">جاري رفع الصورة...</span>}
+                    {newEssayQuestion.image && (
+                      <div className="flex items-center gap-2">
+                        <img src={generateImageUrl(newEssayQuestion.image)} alt="Question" className="w-16 h-16 object-cover rounded" />
+                        <button type="button" className="text-red-500 text-sm" onClick={() => setNewEssayQuestion(q => ({ ...q, image: '' }))}>حذف الصورة</button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <button type="button" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={handleAddEssayQuestion} disabled={!newEssayQuestion.question.trim()}>
+                    إضافة السؤال المقالي
+                  </button>
+                </div>
+
+                {/* Questions List */}
+                {newEssayExam.questions.length > 0 && (
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 dark:text-white mb-3 text-right">الأسئلة المقالية المضافة ({newEssayExam.questions.length})</h3>
+                    <div className="space-y-3">
+                      {newEssayExam.questions.map((question, idx) => (
+                        <div key={idx} className="bg-white dark:bg-gray-600 rounded p-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 text-right">
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                <span className="text-blue-600 font-bold">السؤال {getArabicOrdinalNumber(idx + 1)}:</span> {question.question}
+                              </p>
+                              {question.description && <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{question.description}</p>}
+                              {question.image && <img src={generateImageUrl(question.image)} alt="Question" className="w-20 h-20 object-cover rounded mt-2" />}
+                              <div className="mt-2 space-y-1">
+                                <div className="text-sm text-gray-600 dark:text-gray-300">
+                                  الدرجة القصوى: {question.maxGrade}
+                                </div>
+                                {question.allowFileUpload && (
+                                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                                    رفع ملف: مسموح ({question.allowedFileTypes.join(', ')}) - الحد الأقصى: {question.maxFileSize} ميجابايت
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-2 mr-3">
+                              <button type="button" className="text-red-500 hover:text-red-700 text-sm" onClick={() => handleRemoveEssayQuestion(idx)}>حذف</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add Essay Exam Button */}
+                <div className="flex justify-end">
+                  {editEssayExamIndex !== null ? (
+                    <div className="flex gap-2">
+                      <button type="button" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50" onClick={handleSaveEditEssayExam} disabled={saving}>
+                        {saving ? 'جاري الحفظ...' : 'حفظ التعديل'}
+                      </button>
+                      <button type="button" className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500" onClick={handleCancelEditEssayExam} disabled={saving}>
+                        إلغاء
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="button" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700" onClick={handleAddEssayExam} disabled={!newEssayExam.title.trim() || newEssayExam.questions.length === 0 || saving}>
+                      {saving ? 'جاري الإنشاء...' : 'إنشاء الامتحان المقالي'}
+                    </button>
+                  )}
+                </div>
+
+                {/* Existing Essay Exams */}
+                <div className="mt-6">
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-3 text-right">الامتحانات المقالية المضافة</h3>
+                  {essayExams.length === 0 ? (
+                    <div className="text-gray-400 text-sm text-right">لا توجد امتحانات مقالية مضافة</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {essayExams.map((exam, idx) => (
+                        <div key={exam._id} className="bg-gray-50 dark:bg-gray-700 rounded p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 text-right">
+                              <h4 className="font-medium text-gray-900 dark:text-white">{exam.title}</h4>
+                              {exam.description && <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{exam.description}</p>}
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                <div>تاريخ الفتح: {formatDateTime(exam.openDate)}</div>
+                                <div>تاريخ الإغلاق: {formatDateTime(exam.closeDate)}</div>
+                                <div>عدد الأسئلة: {exam.questions?.length || 0}</div>
+                                <div>إجمالي التقديمات: {exam.totalSubmissions || 0}</div>
+                                <div>التقديمات المصححة: {exam.gradedSubmissions || 0}</div>
+                              </div>
+                              <button 
+                                onClick={() => toggleEssayExamExpanded(idx)}
+                                className="text-blue-600 hover:text-blue-800 text-sm mt-2 flex items-center gap-1"
+                              >
+                                {expandedEssayExams.has(idx) ? 'إخفاء الأسئلة' : 'عرض الأسئلة'}
+                                <span>{expandedEssayExams.has(idx) ? '▼' : '▶'}</span>
+                              </button>
+                            </div>
+                            <div className="flex gap-2 mr-3">
+                              <button type="button" className="text-blue-500 hover:text-blue-700 text-sm" onClick={() => handleEditEssayExam(idx)}>تعديل</button>
+                              <button type="button" className="text-red-500 hover:text-red-700 text-sm" onClick={() => handleRemoveEssayExam(exam._id)}>حذف</button>
+                            </div>
+                          </div>
+                          
+                          {/* Expandable Questions Section */}
+                          {expandedEssayExams.has(idx) && exam.questions && exam.questions.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-3 text-right">الأسئلة:</h5>
+                              <div className="space-y-3">
+                                {exam.questions.map((question, qIdx) => (
+                                  <div key={qIdx} className="bg-white dark:bg-gray-600 rounded p-3">
+                                    <div className="text-right">
+                                      <p className="font-medium text-gray-900 dark:text-white mb-2">
+                                        <span className="text-blue-600 font-bold">السؤال {getArabicOrdinalNumber(qIdx + 1)}:</span> {question.question}
+                                      </p>
+                                      {question.description && <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{question.description}</p>}
+                                      {question.image && <img src={generateImageUrl(question.image)} alt="Question" className="w-20 h-20 object-cover rounded mb-2" />}
+                                      <div className="space-y-1">
+                                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                                          الدرجة القصوى: {question.maxGrade}
+                                        </div>
+                                        {question.allowFileUpload && (
+                                          <div className="text-sm text-gray-600 dark:text-gray-300">
+                                            رفع ملف: مسموح ({question.allowedFileTypes.join(', ')}) - الحد الأقصى: {question.maxFileSize} ميجابايت
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}

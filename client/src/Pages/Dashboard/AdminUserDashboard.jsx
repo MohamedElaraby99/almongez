@@ -834,7 +834,7 @@ export default function AdminUserDashboard() {
                                                     >
                                                         <FaWallet />
                                                     </button>
-                                                    {(user.role !== 'ADMIN' || canDeleteAdmin) && (
+                                                    {(user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' || canDeleteAdmin) && (
                                                         <button
                                                             onClick={() => {
                                                                 setUserToDelete(user.id);
@@ -1022,7 +1022,7 @@ export default function AdminUserDashboard() {
                                                     >
                                                         <FaWallet />
                                                     </button>
-                                                    {(user.role !== 'ADMIN' || canDeleteAdmin) && (
+                                                    {(user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' || canDeleteAdmin) && (
                                                         <button
                                                             onClick={() => {
                                                                 setUserToDelete(user.id);
@@ -1216,7 +1216,7 @@ export default function AdminUserDashboard() {
                                                     >
                                                         <FaWallet />
                                                     </button>
-                                                    {(user.role !== 'ADMIN' || canDeleteAdmin) && (
+                                                    {(user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' || canDeleteAdmin) && (
                                                         <button
                                                             onClick={() => {
                                                                 setUserToDelete(user.id);
@@ -2054,7 +2054,7 @@ export default function AdminUserDashboard() {
                                             تغيير الدور
                                         </button>
                                     )}
-                                    {(user.role !== 'ADMIN' || canDeleteAdmin) && (
+                                    {(user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' || canDeleteAdmin) && (
                                         <button
                                             onClick={() => {
                                                 setUserToDelete(selectedUser.id);
