@@ -94,7 +94,7 @@ const AnimatedHero = ({ onGetStarted }) => {
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4 justify-end">
               {user?.fullName ? (
                 <a
-                  href="/subjects"
+                  href="/courses"
                   className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white rounded-lg font-bold text-lg shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
                   ابدأ التعلم
