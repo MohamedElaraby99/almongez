@@ -26,6 +26,7 @@ export default function Signup() {
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(true);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [signupData, setSignupData] = useState({
     fullName: "",
     username: "",
@@ -67,6 +68,14 @@ export default function Signup() {
       ...signupData,
       [name]: value,
     });
+    
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors({
+        ...fieldErrors,
+        [name]: null
+      });
+    }
   }
 
   function getImage(event) {
@@ -111,6 +120,112 @@ export default function Signup() {
     setCaptchaSessionId("");
   }
 
+  // Enhanced error handler function
+  function validateForm() {
+    const errors = [];
+    const newFieldErrors = {};
+    
+    // Check CAPTCHA verification
+    if (!isCaptchaVerified) {
+      errors.push("يرجى التحقق من رمز الأمان أولاً");
+    }
+    
+    if (!captchaSessionId) {
+      errors.push("رمز التحقق مفقود، يرجى المحاولة مرة أخرى");
+    }
+    
+    if (!termsAccepted) {
+      errors.push("يرجى الموافقة على الشروط والأحكام أولاً");
+    }
+    
+    // Basic required fields for all users
+    if (!signupData.fullName || signupData.fullName.trim() === "") {
+      errors.push("الاسم الكامل مطلوب");
+      newFieldErrors.fullName = "الاسم الكامل مطلوب";
+    } else if (signupData.fullName.length < 3) {
+      errors.push("يجب أن يكون الاسم 3 أحرف على الأقل");
+      newFieldErrors.fullName = "يجب أن يكون الاسم 3 أحرف على الأقل";
+    }
+    
+    if (!signupData.username || signupData.username.trim() === "") {
+      errors.push("اسم المستخدم مطلوب");
+      newFieldErrors.username = "اسم المستخدم مطلوب";
+    } else if (signupData.username.length < 3) {
+      errors.push("يجب أن يكون اسم المستخدم 3 أحرف على الأقل");
+      newFieldErrors.username = "يجب أن يكون اسم المستخدم 3 أحرف على الأقل";
+    } else if (!signupData.username.match(/^[a-zA-Z0-9_]+$/)) {
+      errors.push("يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطة سفلية فقط");
+      newFieldErrors.username = "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطة سفلية فقط";
+    }
+    
+    if (!signupData.password || signupData.password.trim() === "") {
+      errors.push("كلمة المرور مطلوبة");
+      newFieldErrors.password = "كلمة المرور مطلوبة";
+    } else if (signupData.password.length < 6) {
+      errors.push("يجب أن تكون كلمة المرور 6 أحرف على الأقل");
+      newFieldErrors.password = "يجب أن تكون كلمة المرور 6 أحرف على الأقل";
+    }
+    
+    // Role-specific validation
+    if (isAdminRegistration) {
+      // For admin users: email is required
+      if (!signupData.email || signupData.email.trim() === "") {
+        errors.push("البريد الإلكتروني مطلوب للمشرفين");
+        newFieldErrors.email = "البريد الإلكتروني مطلوب للمشرفين";
+      } else if (!signupData.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+        errors.push("بريد إلكتروني غير صحيح");
+        newFieldErrors.email = "بريد إلكتروني غير صحيح";
+      }
+    } else {
+      // For regular users: phone number is required, email is optional
+      if (!signupData.phoneNumber || signupData.phoneNumber.trim() === "") {
+        errors.push("رقم الهاتف مطلوب");
+        newFieldErrors.phoneNumber = "رقم الهاتف مطلوب";
+      } else if (!signupData.phoneNumber.match(/^(\+20|0)?1[0125][0-9]{8}$/)) {
+        errors.push("يرجى إدخال رقم هاتف مصري صحيح (مثال: 01234567890)");
+        newFieldErrors.phoneNumber = "يرجى إدخال رقم هاتف مصري صحيح (مثال: 01234567890)";
+      }
+      
+      if (!signupData.governorate || signupData.governorate.trim() === "") {
+        errors.push("المدينة مطلوبة");
+        newFieldErrors.governorate = "المدينة مطلوبة";
+      }
+      
+      if (!signupData.stage || signupData.stage.trim() === "") {
+        errors.push("المرحلة الدراسية مطلوبة");
+        newFieldErrors.stage = "المرحلة الدراسية مطلوبة";
+      }
+      
+      if (!signupData.age || signupData.age.trim() === "") {
+        errors.push("العمر مطلوب");
+        newFieldErrors.age = "العمر مطلوب";
+      } else {
+        const age = parseInt(signupData.age);
+        if (isNaN(age) || age < 5 || age > 100) {
+          errors.push("يرجى إدخال عمر صحيح بين 5 و 100");
+          newFieldErrors.age = "يرجى إدخال عمر صحيح بين 5 و 100";
+        }
+      }
+      
+      // Validate email if provided (optional for regular users)
+      if (signupData.email && signupData.email.trim() !== "" && !signupData.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+        errors.push("بريد إلكتروني غير صحيح");
+        newFieldErrors.email = "بريد إلكتروني غير صحيح";
+      }
+      
+      // father phone optional - validate only if provided
+      if (signupData.fatherPhoneNumber && signupData.fatherPhoneNumber.trim() !== "" && !signupData.fatherPhoneNumber.match(/^(\+20|0)?1[0125][0-9]{8}$/)) {
+        errors.push("يرجى إدخال رقم هاتف ولي الامر الصحيح");
+        newFieldErrors.fatherPhoneNumber = "يرجى إدخال رقم هاتف ولي الامر الصحيح";
+      }
+    }
+    
+    // Update field errors state
+    setFieldErrors(newFieldErrors);
+    
+    return errors;
+  }
+
   async function createNewAccount(event) {
     event.preventDefault();
     
@@ -124,87 +239,27 @@ export default function Signup() {
     console.log('Form submission - Form data:', signupData);
     console.log('=== END DEBUG ===');
     
-    if (!isCaptchaVerified) {
-      toast.error("يرجى التحقق من رمز الأمان أولاً");
-      return;
-    }
+    // Validate form and get all errors
+    const validationErrors = validateForm();
     
-    if (!captchaSessionId) {
-      toast.error("رمز التحقق مفقود، يرجى المحاولة مرة أخرى");
+    if (validationErrors.length > 0) {
+      // Show first error
+      toast.error(validationErrors[0]);
+      
+      // If there are multiple errors, show a summary after a delay
+      if (validationErrors.length > 1) {
+        setTimeout(() => {
+          const errorSummary = `يوجد ${validationErrors.length - 1} أخطاء أخرى:\n${validationErrors.slice(1).join('\n')}`;
+          toast.error(errorSummary, { duration: 5000 });
+        }, 2000);
+      }
+      
+      // If terms not accepted, show modal
+      if (!termsAccepted) {
+        setShowTermsModal(true);
+      }
+      
       return;
-    }
-    
-    if (!termsAccepted) {
-      toast.error("يرجى الموافقة على الشروط والأحكام أولاً");
-      setShowTermsModal(true);
-      return;
-    }
-    
-    // Basic required fields for all users
-    if (!signupData.password || !signupData.fullName || !signupData.username || !signupData.avatar) {
-      toast.error("الاسم، اسم المستخدم، كلمة المرور، والصورة الشخصية مطلوبة");
-      return;
-    }
-    
-    // Role-specific validation
-    if (isAdminRegistration) {
-      // For admin users: email is required
-      if (!signupData.email) {
-        toast.error("البريد الإلكتروني مطلوب للمشرفين");
-        return;
-      }
-      // Validate email format for admin
-      if (!signupData.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
-        toast.error("بريد إلكتروني غير صحيح");
-        return;
-      }
-    } else {
-      // For regular users: phone number is required, email is optional
-      if (!signupData.phoneNumber || !signupData.governorate || !signupData.stage || !signupData.age) {
-        toast.error("يرجى ملء جميع الحقول المطلوبة");
-        return;
-      }
-      // Validate phone number for regular users
-      if (!signupData.phoneNumber.match(/^(\+20|0)?1[0125][0-9]{8}$/)) {
-        toast.error("يرجى إدخال رقم هاتف مصري صحيح");
-        return;
-      }
-      // Validate email if provided (optional for regular users)
-      if (signupData.email && !signupData.email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
-        toast.error("بريد إلكتروني غير صحيح");
-        return;
-      }
-    }
-
-    // checking name field length
-    if (signupData.fullName.length < 3) {
-      toast.error("يجب أن يكون الاسم 3 أحرف على الأقل");
-      return;
-    }
-    // checking username field length
-    if (signupData.username.length < 3) {
-      toast.error("يجب أن يكون اسم المستخدم 3 أحرف على الأقل");
-      return;
-    }
-    // checking username format
-    if (!signupData.username.match(/^[a-zA-Z0-9_]+$/)) {
-      toast.error("يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطة سفلية فقط");
-      return;
-    }
-    
-    // For regular users, validate additional fields
-    if (!isAdminRegistration) {
-      // father phone optional - validate only if provided
-      if (signupData.fatherPhoneNumber && !signupData.fatherPhoneNumber.match(/^(\+20|0)?1[0125][0-9]{8}$/)) {
-        toast.error("يرجى إدخال رقم هاتف ولي الامر الصحيح");
-        return;
-      }
-      // checking valid age
-      const age = parseInt(signupData.age);
-      if (isNaN(age) || age < 5 || age > 100) {
-        toast.error("يرجى إدخال عمر صحيح بين 5 و 100");
-        return;
-      }
     }
 
     // Generate device information for fingerprinting
@@ -388,11 +443,21 @@ export default function Signup() {
                     name="fullName"
                     type="text"
                     required
-                    className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                    className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                      fieldErrors.fullName 
+                        ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                        : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                    }`}
                     placeholder="أدخل اسمك الكامل"
                     value={signupData.fullName}
                     onChange={handleUserInput}
                   />
+                  {fieldErrors.fullName && (
+                    <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                      <FaExclamationTriangle className="text-xs" />
+                      {fieldErrors.fullName}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -410,11 +475,21 @@ export default function Signup() {
                     name="username"
                     type="text"
                     required
-                    className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                    className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                      fieldErrors.username 
+                        ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                        : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                    }`}
                     placeholder="أدخل اسم المستخدم"
                     value={signupData.username}
                     onChange={handleUserInput}
                   />
+                  {fieldErrors.username && (
+                    <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                      <FaExclamationTriangle className="text-xs" />
+                      {fieldErrors.username}
+                    </p>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
                   يمكن استخدام الأحرف والأرقام والشرطة السفلية فقط
@@ -435,11 +510,21 @@ export default function Signup() {
                     name="email"
                     type="email"
                     required={isAdminRegistration}
-                    className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                    className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                      fieldErrors.email 
+                        ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                        : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                    }`}
                     placeholder={isAdminRegistration ? "أدخل بريدك الإلكتروني" : "أدخل بريدك الإلكتروني (اختياري)"}
                     value={signupData.email}
                     onChange={handleUserInput}
                   />
+                  {fieldErrors.email && (
+                    <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                      <FaExclamationTriangle className="text-xs" />
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
                 {!isAdminRegistration && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
@@ -462,11 +547,21 @@ export default function Signup() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full pr-12 pl-12 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                    className={`block w-full pr-12 pl-12 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                      fieldErrors.password 
+                        ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                        : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                    }`}
                     placeholder="أنشئ كلمة مرور قوية"
                     value={signupData.password}
                     onChange={handleUserInput}
                   />
+                  {fieldErrors.password && (
+                    <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                      <FaExclamationTriangle className="text-xs" />
+                      {fieldErrors.password}
+                    </p>
+                  )}
                   <button
                     type="button"
                     className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
@@ -496,11 +591,21 @@ export default function Signup() {
                       name="phoneNumber"
                       type="tel"
                       required
-                      className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                      className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                        fieldErrors.phoneNumber 
+                          ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                          : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                      }`}
                       placeholder="أدخل رقم هاتفك المصري"
                       value={signupData.phoneNumber}
                       onChange={handleUserInput}
                     />
+                    {fieldErrors.phoneNumber && (
+                      <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                        <FaExclamationTriangle className="text-xs" />
+                        {fieldErrors.phoneNumber}
+                      </p>
+                    )}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
                     سيتم استخدام هذا الرقم لتسجيل الدخول إلى حسابك
@@ -523,11 +628,21 @@ export default function Signup() {
                       name="fatherPhoneNumber"
                       type="tel"
                       required={false}
-                      className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                      className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                        fieldErrors.fatherPhoneNumber 
+                          ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                          : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                      }`}
                       placeholder="أدخل رقم هاتف ولي الامر"
                       value={signupData.fatherPhoneNumber}
                       onChange={handleUserInput}
                     />
+                    {fieldErrors.fatherPhoneNumber && (
+                      <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                        <FaExclamationTriangle className="text-xs" />
+                        {fieldErrors.fatherPhoneNumber}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -546,7 +661,11 @@ export default function Signup() {
                       id="governorate"
                       name="governorate"
                       required
-                      className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                      className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                        fieldErrors.governorate 
+                          ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                          : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                      }`}
                       value={signupData.governorate}
                       onChange={handleUserInput}
                     >
@@ -557,6 +676,12 @@ export default function Signup() {
                         </option>
                       ))}
                     </select>
+                    {fieldErrors.governorate && (
+                      <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                        <FaExclamationTriangle className="text-xs" />
+                        {fieldErrors.governorate}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -575,7 +700,11 @@ export default function Signup() {
                       id="stage"
                       name="stage"
                       required
-                      className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                      className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                        fieldErrors.stage 
+                          ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                          : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                      }`}
                       value={signupData.stage}
                       onChange={handleUserInput}
                     >
@@ -586,6 +715,12 @@ export default function Signup() {
                         </option>
                       ))}
                     </select>
+                    {fieldErrors.stage && (
+                      <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                        <FaExclamationTriangle className="text-xs" />
+                        {fieldErrors.stage}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -607,11 +742,21 @@ export default function Signup() {
                       min="5"
                       max="100"
                       required
-                      className="block w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right shadow-sm hover:shadow-md"
+                      className={`block w-full pr-12 pl-4 py-4 border-2 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 transition-all duration-300 text-right shadow-sm hover:shadow-md ${
+                        fieldErrors.age 
+                          ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' 
+                          : 'border-gray-200 dark:border-gray-600 focus:ring-blue-500/20 focus:border-blue-500'
+                      }`}
                       placeholder="أدخل عمرك"
                       value={signupData.age}
                       onChange={handleUserInput}
                     />
+                    {fieldErrors.age && (
+                      <p className="text-red-500 text-xs mt-1 text-right flex items-center gap-1">
+                        <FaExclamationTriangle className="text-xs" />
+                        {fieldErrors.age}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -619,7 +764,7 @@ export default function Signup() {
               {/* Enhanced Avatar Upload */}
               <div className="group">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-right">
-                  الصورة الشخصية
+                  الصورة الشخصية (اختياري)
                 </label>
                 <div className="flex items-center space-x-reverse space-x-4">
                   <div className="relative">
@@ -654,7 +799,6 @@ export default function Signup() {
                       onChange={getImage}
                       type="file"
                       accept=".jpg, .jpeg, .png, image/*"
-                      required
                       className="hidden"
                     />
                   </div>
